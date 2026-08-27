@@ -5,7 +5,7 @@
   "description": "Trusted CLI and reusable GitHub Actions workflows for grading web-programming submissions",
   "type": "module",
   "engines": {
-    "node": "24.20.0"
+    "node": "24.19.0"
   },
   "scripts": {
     "gate": "node grader/src/pr-gate.mjs",

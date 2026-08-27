@@ -1,4 +1,4 @@
-FROM node:24.20.0-bookworm-slim
+FROM node:24.19.0-bookworm-slim
 
 WORKDIR /workspace
 

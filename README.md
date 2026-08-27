@@ -26,7 +26,7 @@ git rev-parse HEAD
 
 ## Локальный запуск
 
-Требуется Node.js `24.20.0`.
+Требуется Node.js `24.19.0`.
 
 ```bash
 npm ci
