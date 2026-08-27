@@ -1,0 +1,38 @@
+{
+  "name": "web-programming-cli-utils",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Trusted CLI and reusable GitHub Actions workflows for grading web-programming submissions",
+  "type": "module",
+  "engines": {
+    "node": "24.20.0"
+  },
+  "scripts": {
+    "gate": "node grader/src/pr-gate.mjs",
+    "grade": "node grader/src/grade.mjs",
+    "report": "node grader/src/progress-report.mjs",
+    "setup:browser": "playwright install chromium",
+    "test": "vitest run --config grader/vitest.config.mjs",
+    "test:grader": "vitest run --config grader/vitest.config.mjs grader/tests/grader",
+    "lint": "eslint . --max-warnings 0",
+    "format:check": "prettier --check .",
+    "markdown:check": "markdownlint-cli2",
+    "validate": "npm run format:check && npm run lint && npm run markdown:check && npm run test:grader"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.62.1",
+    "esbuild": "0.28.2",
+    "eslint": "10.9.1",
+    "fast-check": "4.9.0",
+    "globals": "17.11.0",
+    "html-validate": "11.10.0",
+    "markdownlint-cli2": "0.23.2",
+    "prettier": "3.9.6",
+    "stylelint": "17.14.1",
+    "stylelint-config-standard": "40.0.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.68.0",
+    "vitest": "4.1.11"
+  }
+}

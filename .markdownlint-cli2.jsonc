@@ -1,0 +1,9 @@
+{
+  "config": {
+    "MD013": false,
+    "MD024": { "siblings_only": true },
+    "MD033": false,
+  },
+  "globs": ["README.md", "CONTRIBUTING.md", "docs/**/*.md"],
+  "ignores": ["01_УМК/**", "grader/fixtures/**", "node_modules/**"],
+}

@@ -1,0 +1,58 @@
+[
+  { "id": "analyzie-string", "exportName": "analyzieString", "title": "Анализ символов строки" },
+  { "id": "to-roman", "exportName": "toRoman", "title": "Преобразование числа в римскую запись" },
+  {
+    "id": "calculate-expression",
+    "exportName": "calculateExpression",
+    "title": "Вычисление арифметического выражения"
+  },
+  {
+    "id": "convert-base",
+    "exportName": "convertBase",
+    "title": "Преобразование между системами счисления"
+  },
+  { "id": "to-binary", "exportName": "toBinary", "title": "Десятичное число в двоичную строку" },
+  {
+    "id": "perfect-number",
+    "exportName": "isPerfectNumber",
+    "title": "Проверка совершенного числа"
+  },
+  {
+    "id": "longest-palindrome",
+    "exportName": "findLongestPalindrome",
+    "title": "Самая длинная подстрока-палиндром"
+  },
+  { "id": "count-vowels", "exportName": "countVowels", "title": "Подсчёт английских гласных" },
+  { "id": "balanced-brackets", "exportName": "isBalanced", "title": "Сбалансированные скобки" },
+  {
+    "id": "missing-number",
+    "exportName": "findMissingNumber",
+    "title": "Поиск пропущенного числа"
+  },
+  {
+    "id": "reverse-words",
+    "exportName": "reverseWords",
+    "title": "Разворот символов каждого слова"
+  },
+  {
+    "id": "format-phone-number",
+    "exportName": "formatPhoneNumber",
+    "title": "Форматирование телефона"
+  },
+  { "id": "zodiac-sign", "exportName": "getZodiacSign", "title": "Знак зодиака по дате" },
+  { "id": "hex-to-rgb", "exportName": "hexToRgb", "title": "HEX в RGB" },
+  { "id": "time-ago", "exportName": "timeAgo", "title": "Описание прошедшего времени" },
+  { "id": "is-isogram", "exportName": "isIsogram", "title": "Проверка изограммы" },
+  { "id": "abbreviation", "exportName": "toAbbreviation", "title": "Аббревиатура из строки" },
+  { "id": "is-pangram", "exportName": "isPangram", "title": "Проверка английской панграммы" },
+  {
+    "id": "generate-parentheses",
+    "exportName": "generateParentheses",
+    "title": "Генерация правильных скобочных комбинаций"
+  },
+  { "id": "rgb-to-hex", "exportName": "rgbToHex", "title": "RGB в HEX" },
+  { "id": "generate-primes", "exportName": "generatePrimes", "title": "Простые числа до N" },
+  { "id": "run-length-encode", "exportName": "runLengthEncode", "title": "RLE-кодирование" },
+  { "id": "generate-hex-color", "exportName": "generateHexColor", "title": "Случайный HEX-цвет" },
+  { "id": "zip-arrays", "exportName": "zipArrays", "title": "Поэлементное объединение массивов" }
+]

@@ -1,0 +1,46 @@
+[
+  { "id": "remove-duplicates", "exportName": "removeDuplicates", "title": "Удаление дубликатов" },
+  { "id": "rotate-array", "exportName": "rotateArray", "title": "Сдвиг массива вправо" },
+  { "id": "most-frequent", "exportName": "findMostFrequent", "title": "Самый частый элемент" },
+  {
+    "id": "merge-arrays",
+    "exportName": "mergeArrays",
+    "title": "Объединение массивов без дубликатов"
+  },
+  { "id": "chunk-array", "exportName": "chunkArray", "title": "Разбиение массива на части" },
+  { "id": "intersection", "exportName": "intersection", "title": "Пересечение массивов" },
+  { "id": "difference", "exportName": "difference", "title": "Разность массивов" },
+  { "id": "shuffle-array", "exportName": "shuffleArray", "title": "Перемешивание массива" },
+  { "id": "pairs-with-sum", "exportName": "findPairsWithSum", "title": "Пары с заданной суммой" },
+  { "id": "median", "exportName": "findMedian", "title": "Медиана массива" },
+  {
+    "id": "max-subarray-sum",
+    "exportName": "findMaxSubarraySum",
+    "title": "Максимальная сумма окна"
+  },
+  { "id": "zip-arrays", "exportName": "zipArrays", "title": "Поэлементное объединение массивов" },
+  { "id": "sort-by-frequency", "exportName": "sortByFrequency", "title": "Сортировка по частоте" },
+  { "id": "count-occurrences", "exportName": "countOccurrences", "title": "Количество вхождений" },
+  { "id": "move-zeros-to-end", "exportName": "moveZerosToEnd", "title": "Перенос нулей в конец" },
+  { "id": "equilibrium-index", "exportName": "findEquilibriumIndex", "title": "Индекс равновесия" },
+  {
+    "id": "max-sliding-window",
+    "exportName": "maxSlidingWindow",
+    "title": "Максимумы скользящих окон"
+  },
+  {
+    "id": "longest-increasing-subsequence",
+    "exportName": "findLongestIncreasingSubsequence",
+    "title": "Длина наибольшей возрастающей подпоследовательности"
+  },
+  {
+    "id": "sort-by-parity",
+    "exportName": "sortArrayByParity",
+    "title": "Чётные элементы перед нечётными"
+  },
+  {
+    "id": "sliding-window-sums",
+    "exportName": "slidingWindowSums",
+    "title": "Суммы скользящих окон"
+  }
+]

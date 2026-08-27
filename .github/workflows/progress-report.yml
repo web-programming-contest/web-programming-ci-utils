@@ -1,0 +1,73 @@
+name: Reusable progress report
+
+on:
+  workflow_call:
+    inputs:
+      utils_repository:
+        description: Public repository containing the report generator
+        required: true
+        type: string
+      utils_ref:
+        description: Full 40-character commit SHA of the report generator
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  report:
+    name: Generate report
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Require an immutable grader revision
+        env:
+          UTILS_REF: ${{ inputs.utils_ref }}
+        run: |
+          if [[ ! "$UTILS_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "utils_ref must be a full lowercase 40-character commit SHA" >&2
+            exit 1
+          fi
+
+      - name: Checkout trusted report generator
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          path: trusted
+          persist-credentials: false
+          ref: ${{ inputs.utils_ref }}
+          repository: ${{ inputs.utils_repository }}
+
+      - name: Checkout complete course history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          path: course
+          persist-credentials: false
+          ref: ${{ github.sha }}
+          repository: ${{ github.repository }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.20.0
+          package-manager-cache: false
+
+      - name: Generate reports
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/progress"
+          node trusted/grader/src/progress-report.mjs --root course --format markdown --output "$RUNNER_TEMP/progress/progress.md"
+          node trusted/grader/src/progress-report.mjs --root course --format csv --output "$RUNNER_TEMP/progress/progress.csv"
+          node trusted/grader/src/progress-report.mjs --root course --format json --output "$RUNNER_TEMP/progress/progress.json"
+          cat "$RUNNER_TEMP/progress/progress.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload progress report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: progress-report
+          path: ${{ runner.temp }}/progress
+          retention-days: 90

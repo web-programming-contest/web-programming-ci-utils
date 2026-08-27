@@ -1,0 +1,197 @@
+name: Reusable submission CI
+
+on:
+  workflow_call:
+    inputs:
+      utils_repository:
+        description: Public repository containing the trusted grader
+        required: true
+        type: string
+      utils_ref:
+        description: Full 40-character commit SHA of the trusted grader
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: submission-${{ github.repository }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Structural contract
+    if: >-
+      github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name ||
+      ! startsWith(github.event.pull_request.title, '[MAINTENANCE] ')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      lab: ${{ steps.gate.outputs.lab }}
+      slug: ${{ steps.gate.outputs.slug }}
+      submission_dir: ${{ steps.gate.outputs.submission_dir }}
+      task_id: ${{ steps.gate.outputs.task_id }}
+      variant: ${{ steps.gate.outputs.variant }}
+    steps:
+      - name: Require an immutable grader revision
+        env:
+          UTILS_REF: ${{ inputs.utils_ref }}
+        run: |
+          if [[ ! "$UTILS_REF" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "utils_ref must be a full lowercase 40-character commit SHA" >&2
+            exit 1
+          fi
+
+      - name: Checkout trusted grader
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          path: trusted
+          persist-credentials: false
+          ref: ${{ inputs.utils_ref }}
+          repository: ${{ inputs.utils_repository }}
+
+      - name: Checkout trusted course history from base
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          path: course-base
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.base.sha }}
+          repository: ${{ github.event.pull_request.base.repo.full_name }}
+
+      - name: Checkout untrusted submission from fork
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          path: submission
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Set up trusted Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.20.0
+          package-manager-cache: false
+
+      - id: gate
+        name: Validate PR title, paths, identity and variant
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          node trusted/grader/src/pr-gate.mjs
+          --base-root course-base
+          --head-root submission
+
+  grade:
+    name: Trusted grader
+    needs: gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout trusted grader
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          path: trusted
+          persist-credentials: false
+          ref: ${{ inputs.utils_ref }}
+          repository: ${{ inputs.utils_repository }}
+
+      - name: Checkout untrusted submission from fork
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          path: submission
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Build the trusted grader image
+        run: docker build --file trusted/grader/Dockerfile --tag course-grader:local trusted
+
+      - name: Prepare writable diagnostics directory
+        run: mkdir -p "$RUNNER_TEMP/grader-results"
+
+      - name: Run untrusted student code in a restricted container
+        run: >-
+          docker run --rm
+          --network none
+          --read-only
+          --cap-drop ALL
+          --security-opt no-new-privileges
+          --pids-limit 256
+          --memory 1g
+          --cpus 2
+          --tmpfs /tmp:rw,nosuid,nodev,size=256m
+          --tmpfs /dev/shm:rw,nosuid,nodev,size=512m
+          --user "$(id -u):$(id -g)"
+          --env HOME=/tmp/home
+          --volume "$GITHUB_WORKSPACE/submission:/workspace/submission:ro"
+          --volume "$RUNNER_TEMP/grader-results:/workspace/grader-results:rw"
+          course-grader:local
+          node grader/src/grade.mjs
+          --submission "/workspace/submission/${{ needs.gate.outputs.submission_dir }}"
+          --lab "${{ needs.gate.outputs.lab }}"
+          --variant "${{ needs.gate.outputs.variant }}"
+          --results /workspace/grader-results
+
+      - name: Set up Node.js for the trusted summary renderer
+        if: always()
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.20.0
+          package-manager-cache: false
+
+      - name: Render check summary
+        if: always()
+        run: node trusted/grader/src/render-summary.mjs --results "$RUNNER_TEMP/grader-results"
+
+      - name: Upload diagnostic reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: grader-results-${{ github.event.pull_request.number }}
+          path: ${{ runner.temp }}/grader-results
+          if-no-files-found: warn
+          retention-days: 14
+
+  maintenance:
+    name: Maintainer checks
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name &&
+      startsWith(github.event.pull_request.title, '[MAINTENANCE] ')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout trusted grader
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          path: trusted
+          persist-credentials: false
+          ref: ${{ inputs.utils_ref }}
+          repository: ${{ inputs.utils_repository }}
+
+      - name: Checkout maintenance PR merge result
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          path: course
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.20.0
+          package-manager-cache: false
+
+      - name: Install pinned grader dependencies
+        working-directory: trusted
+        run: npm ci
+
+      - name: Validate the pinned grader
+        working-directory: trusted
+        run: npm run validate
