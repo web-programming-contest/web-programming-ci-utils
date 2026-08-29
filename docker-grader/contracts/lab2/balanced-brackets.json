@@ -1,0 +1,11 @@
+{
+  "taskId": "balanced-brackets",
+  "cases": [
+    { "name": "nested bracket kinds", "args": ["{[()]}"], "expected": true },
+    { "name": "crossed brackets", "args": ["[(])"], "expected": false },
+    { "name": "empty string", "args": [""], "expected": true },
+    { "name": "other characters ignored", "args": ["text(a[0])"], "expected": true },
+    { "name": "missing closing bracket", "args": ["(()"], "expected": false },
+    { "name": "closing bracket first", "args": [")("], "expected": false }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "taskId": "rotate-array",
+  "cases": [
+    { "name": "one step", "args": [[1, 2, 3, 4], 1], "expected": [4, 1, 2, 3] },
+    { "name": "steps exceed length", "args": [[1, 2, 3, 4], 6], "expected": [3, 4, 1, 2] },
+    { "name": "zero steps", "args": [[1, 2, 3], 0], "expected": [1, 2, 3] },
+    { "name": "whole cycle", "args": [[1, 2, 3], 3], "expected": [1, 2, 3] },
+    { "name": "empty array", "args": [[], 3], "expected": [] }
+  ]
+}

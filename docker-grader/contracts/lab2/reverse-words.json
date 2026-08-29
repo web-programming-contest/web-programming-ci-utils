@@ -1,0 +1,13 @@
+{
+  "taskId": "reverse-words",
+  "cases": [
+    { "name": "two words", "args": ["Hello world"], "expected": "olleH dlrow" },
+    {
+      "name": "three words",
+      "args": ["JavaScript Object Notation"],
+      "expected": "tpircSavaJ tcejbO noitatoN"
+    },
+    { "name": "one character words", "args": ["a b c"], "expected": "a b c" },
+    { "name": "empty string", "args": [""], "expected": "" }
+  ]
+}

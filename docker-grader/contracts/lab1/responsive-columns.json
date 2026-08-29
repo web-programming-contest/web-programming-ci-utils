@@ -1,0 +1,16 @@
+{
+  "taskId": "responsive-columns",
+  "checks": [
+    {
+      "name": "three/two/one responsive columns",
+      "kind": "responsive-columns",
+      "selector": "main > article, main > section, main > div, [class*='columns'] > *, [class*='grid'] > *",
+      "minCount": 3,
+      "viewports": [
+        { "width": 1280, "columns": 3 },
+        { "width": 800, "columns": 2 },
+        { "width": 480, "columns": 1 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "taskId": "product-card-hover",
+  "checks": [{ "name": "card hover effects", "kind": "hover-card" }],
+  "elements": [
+    { "name": "product image", "selector": "article img, [class*='card'] img", "visible": true },
+    {
+      "name": "product title",
+      "selector": "article h1, article h2, article h3, [class*='card'] h1, [class*='card'] h2, [class*='card'] h3",
+      "visible": true
+    },
+    {
+      "name": "product price",
+      "selector": "article [class*='price'], [class*='card'] [class*='price']",
+      "visible": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "taskId": "sales-table",
+  "elements": [
+    { "name": "table header", "selector": "table thead", "visible": true },
+    { "name": "three columns", "selector": "table thead th", "count": 3 },
+    { "name": "five data rows", "selector": "table tbody tr", "count": 5 },
+    { "name": "table footer", "selector": "table tfoot", "visible": true },
+    {
+      "name": "even rows",
+      "selector": "table tbody tr:nth-child(even)",
+      "all": true,
+      "css": { "background-color": "rgb(242, 242, 242)" }
+    },
+    {
+      "name": "odd rows",
+      "selector": "table tbody tr:nth-child(odd)",
+      "all": true,
+      "css": { "background-color": "rgb(255, 255, 255)" }
+    }
+  ],
+  "interactions": [
+    {
+      "name": "row hover",
+      "selector": "table tbody tr:first-child",
+      "action": "hover",
+      "css": { "background-color": "rgb(211, 211, 211)" }
+    }
+  ]
+}

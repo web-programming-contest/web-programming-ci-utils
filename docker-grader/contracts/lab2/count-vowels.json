@@ -1,0 +1,9 @@
+{
+  "taskId": "count-vowels",
+  "cases": [
+    { "name": "mixed case", "args": ["Hello WORLD"], "expected": 3 },
+    { "name": "no vowels", "args": ["rhythm"], "expected": 0 },
+    { "name": "all English vowels", "args": ["AEIOUaeiou"], "expected": 10 },
+    { "name": "empty string", "args": [""], "expected": 0 }
+  ]
+}

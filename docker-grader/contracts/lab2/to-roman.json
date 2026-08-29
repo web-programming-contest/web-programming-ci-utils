@@ -1,0 +1,12 @@
+{
+  "taskId": "to-roman",
+  "cases": [
+    { "name": "smallest value", "args": [1], "expected": "I" },
+    { "name": "subtractive four", "args": [4], "expected": "IV" },
+    { "name": "subtractive nine", "args": [9], "expected": "IX" },
+    { "name": "forty four", "args": [44], "expected": "XLIV" },
+    { "name": "mixed symbols", "args": [58], "expected": "LVIII" },
+    { "name": "historic example", "args": [1994], "expected": "MCMXCIV" },
+    { "name": "largest value", "args": [3999], "expected": "MMMCMXCIX" }
+  ]
+}

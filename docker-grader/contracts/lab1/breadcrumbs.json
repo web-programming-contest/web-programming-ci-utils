@@ -1,0 +1,26 @@
+{
+  "taskId": "breadcrumbs",
+  "elements": [
+    { "name": "list structure", "selector": "ul, ol", "visible": true },
+    { "name": "breadcrumb links", "selector": "li a", "minCount": 1 },
+    {
+      "name": "last breadcrumb",
+      "selector": "li:last-child span",
+      "visible": true,
+      "css": { "color": "rgb(51, 51, 51)" }
+    },
+    {
+      "name": "breadcrumb arrows",
+      "selector": "li:not(:last-child), li:not(:last-child) a",
+      "pseudoContent": "::after"
+    }
+  ],
+  "interactions": [
+    {
+      "name": "link hover",
+      "selector": "li a",
+      "action": "hover",
+      "css": { "text-decoration-line": "underline" }
+    }
+  ]
+}

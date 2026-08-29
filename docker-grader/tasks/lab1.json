@@ -1,0 +1,30 @@
+[
+  { "id": "registration-form", "title": "Форма регистрации" },
+  { "id": "breadcrumbs", "title": "Хлебные крошки" },
+  { "id": "layered-rectangles", "title": "Перекрывающиеся прямоугольники" },
+  { "id": "sales-table", "title": "Таблица продаж" },
+  { "id": "pagination", "title": "Постраничная навигация" },
+  { "id": "dish-menu", "title": "Меню блюд" },
+  { "id": "product-cards", "title": "Три карточки товара" },
+  { "id": "japan-flag", "title": "Флаг Японии" },
+  { "id": "product-catalog", "title": "Каталог товаров по категориям" },
+  { "id": "compact-registration-form", "title": "Двухколоночная форма регистрации" },
+  { "id": "task-status-list", "title": "Список задач со статусами" },
+  { "id": "page-layout", "title": "Макет страницы с боковой панелью" },
+  { "id": "text-clamp", "title": "Обрезка текста до трёх строк" },
+  { "id": "horizontal-nav", "title": "Горизонтальное меню" },
+  { "id": "centered-content", "title": "Центрированный текст и изображение" },
+  { "id": "product-review-card", "title": "Карточка товара с отзывами" },
+  { "id": "responsive-columns", "title": "Адаптивные три колонки" },
+  { "id": "product-card-hover", "title": "Hover-состояние карточки товара" },
+  { "id": "responsive-image-grid", "title": "Адаптивная сетка изображений" },
+  { "id": "confirmation-dialog", "title": "Диалог подтверждения" },
+  { "id": "responsive-nav", "title": "Адаптивное меню навигации" },
+  { "id": "custom-underline", "title": "Нестандартное подчёркивание" },
+  { "id": "full-registration-form-gray", "title": "Расширенная форма регистрации" },
+  {
+    "id": "full-registration-form-country",
+    "title": "Форма регистрации со страной и согласием"
+  },
+  { "id": "bangladesh-flag", "title": "Флаг Бангладеша" }
+]

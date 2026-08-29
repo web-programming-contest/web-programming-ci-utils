@@ -1,0 +1,17 @@
+{
+  "taskId": "is-pangram",
+  "cases": [
+    {
+      "name": "classic pangram",
+      "args": ["The quick brown fox jumps over the lazy dog"],
+      "expected": true
+    },
+    { "name": "missing letters", "args": ["The quick brown fox"], "expected": false },
+    {
+      "name": "mixed case pangram",
+      "args": ["Pack My Box With Five Dozen Liquor Jugs"],
+      "expected": true
+    },
+    { "name": "empty string", "args": [""], "expected": false }
+  ]
+}

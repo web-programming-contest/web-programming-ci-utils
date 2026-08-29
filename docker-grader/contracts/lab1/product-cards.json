@@ -1,0 +1,20 @@
+{
+  "taskId": "product-cards",
+  "checks": [{ "name": "three horizontal cards", "kind": "horizontal-cards" }],
+  "elements": [
+    {
+      "name": "card titles",
+      "selector": "article h1, article h2, article h3, [class*='card'] h1, [class*='card'] h2, [class*='card'] h3",
+      "minCount": 3,
+      "all": true,
+      "css": { "font-family": "Arial", "font-size": "18px", "font-weight": "700" }
+    },
+    {
+      "name": "card descriptions",
+      "selector": "article p, [class*='card'] p",
+      "minCount": 3,
+      "all": true,
+      "css": { "font-family": "Arial", "font-size": "14px" }
+    }
+  ]
+}

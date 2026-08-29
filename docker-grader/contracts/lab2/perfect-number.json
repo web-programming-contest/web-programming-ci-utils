@@ -1,0 +1,11 @@
+{
+  "taskId": "perfect-number",
+  "cases": [
+    { "name": "one is not perfect", "args": [1], "expected": false },
+    { "name": "six", "args": [6], "expected": true },
+    { "name": "twenty eight", "args": [28], "expected": true },
+    { "name": "four hundred ninety six", "args": [496], "expected": true },
+    { "name": "eight thousand one hundred twenty eight", "args": [8128], "expected": true },
+    { "name": "ordinary composite", "args": [100], "expected": false }
+  ]
+}

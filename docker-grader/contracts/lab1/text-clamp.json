@@ -1,0 +1,4 @@
+{
+  "taskId": "text-clamp",
+  "checks": [{ "name": "three-line or 100px text clamp", "kind": "text-clamp" }]
+}

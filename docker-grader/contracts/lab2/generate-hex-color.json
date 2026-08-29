@@ -1,0 +1,13 @@
+{
+  "taskId": "generate-hex-color",
+  "cases": [
+    {
+      "name": "valid HEX color",
+      "args": [],
+      "assertion": "matches",
+      "pattern": "^#[0-9A-F]{6}$",
+      "flags": "i",
+      "repeat": 30
+    }
+  ]
+}

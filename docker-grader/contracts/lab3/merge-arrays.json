@@ -1,0 +1,30 @@
+{
+  "taskId": "merge-arrays",
+  "cases": [
+    {
+      "name": "overlapping numbers",
+      "args": [
+        [1, 2, 2],
+        [2, 3, 1, 4]
+      ],
+      "expected": [1, 2, 3, 4]
+    },
+    {
+      "name": "disjoint arrays",
+      "args": [
+        [1, 2],
+        [3, 4]
+      ],
+      "expected": [1, 2, 3, 4]
+    },
+    {
+      "name": "strings preserve order",
+      "args": [
+        ["b", "a"],
+        ["a", "c"]
+      ],
+      "expected": ["b", "a", "c"]
+    },
+    { "name": "empty arrays", "args": [[], []], "expected": [] }
+  ]
+}

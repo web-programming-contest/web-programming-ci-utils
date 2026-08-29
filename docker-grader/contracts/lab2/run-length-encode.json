@@ -1,0 +1,10 @@
+{
+  "taskId": "run-length-encode",
+  "cases": [
+    { "name": "three groups", "args": ["AAABBBCC"], "expected": "3A3B2C" },
+    { "name": "single character", "args": ["A"], "expected": "1A" },
+    { "name": "empty string", "args": [""], "expected": "" },
+    { "name": "mixed case", "args": ["WWWWaaadexxxxxx"], "expected": "4W3a1d1e6x" },
+    { "name": "alternating characters", "args": ["ABAB"], "expected": "1A1B1A1B" }
+  ]
+}

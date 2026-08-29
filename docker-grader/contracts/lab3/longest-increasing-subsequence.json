@@ -1,0 +1,10 @@
+{
+  "taskId": "longest-increasing-subsequence",
+  "cases": [
+    { "name": "standard example", "args": [[10, 9, 2, 5, 3, 7, 101, 18]], "expected": 4 },
+    { "name": "strictly decreasing", "args": [[5, 4, 3, 2, 1]], "expected": 1 },
+    { "name": "strictly increasing", "args": [[1, 2, 3, 4]], "expected": 4 },
+    { "name": "duplicates do not increase length", "args": [[2, 2, 2]], "expected": 1 },
+    { "name": "empty array", "args": [[]], "expected": 0 }
+  ]
+}

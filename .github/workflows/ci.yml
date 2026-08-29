@@ -31,4 +31,4 @@ jobs:
 
       - run: npm ci
       - run: npm run validate
-      - run: docker build --file grader/Dockerfile --tag course-grader:test .
+      - run: docker build --file docker-grader/Dockerfile --tag course-grader:ci .

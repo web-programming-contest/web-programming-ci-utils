@@ -1,0 +1,12 @@
+{
+  "taskId": "pagination",
+  "checks": [{ "name": "pagination structure and alignment", "kind": "pagination" }],
+  "interactions": [
+    {
+      "name": "pagination hover",
+      "selector": "nav a:not(.active):not([aria-current]), nav button:not(.active):not([aria-current]), .pagination a:not(.active)",
+      "action": "hover",
+      "changesCss": ["background-color"]
+    }
+  ]
+}

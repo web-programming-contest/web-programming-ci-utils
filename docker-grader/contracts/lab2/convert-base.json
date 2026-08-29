@@ -1,0 +1,10 @@
+{
+  "taskId": "convert-base",
+  "cases": [
+    { "name": "binary to decimal", "args": ["1010", 2, 10], "expected": "10" },
+    { "name": "hexadecimal to binary", "args": ["FF", 16, 2], "expected": "11111111" },
+    { "name": "decimal to hexadecimal", "args": ["255", 10, 16], "expected": "FF" },
+    { "name": "zero", "args": ["0", 10, 36], "expected": "0" },
+    { "name": "base thirty six uppercase", "args": ["1295", 10, 36], "expected": "ZZ" }
+  ]
+}

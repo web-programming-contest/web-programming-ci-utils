@@ -1,0 +1,20 @@
+{
+  "taskId": "chunk-array",
+  "cases": [
+    {
+      "name": "short final chunk",
+      "args": [[1, 2, 3, 4, 5], 2],
+      "expected": [[1, 2], [3, 4], [5]]
+    },
+    {
+      "name": "exact chunks",
+      "args": [[1, 2, 3, 4], 2],
+      "expected": [
+        [1, 2],
+        [3, 4]
+      ]
+    },
+    { "name": "chunk larger than array", "args": [[1, 2], 5], "expected": [[1, 2]] },
+    { "name": "empty array", "args": [[], 3], "expected": [] }
+  ]
+}

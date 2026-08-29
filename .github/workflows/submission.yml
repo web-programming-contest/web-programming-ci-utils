@@ -30,9 +30,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       lab: ${{ steps.gate.outputs.lab }}
-      slug: ${{ steps.gate.outputs.slug }}
       submission_dir: ${{ steps.gate.outputs.submission_dir }}
-      task_id: ${{ steps.gate.outputs.task_id }}
       variant: ${{ steps.gate.outputs.variant }}
     steps:
       - name: Require an immutable grader revision
@@ -82,7 +80,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: >-
-          node trusted/grader/src/pr-gate.mjs
+          node trusted/pr-gate/index.mjs
           --base-root course-base
           --head-root submission
 
@@ -110,34 +108,39 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
 
-      - name: Build the trusted grader image
-        run: docker build --file trusted/grader/Dockerfile --tag course-grader:local trusted
-
       - name: Prepare writable diagnostics directory
         run: mkdir -p "$RUNNER_TEMP/grader-results"
 
+      - name: Build the trusted grader image
+        run: |
+          set -o pipefail
+          docker build --file trusted/docker-grader/Dockerfile --tag course-grader:local trusted \
+            2>&1 | tee "$RUNNER_TEMP/grader-results/docker-build.log"
+
       - name: Run untrusted student code in a restricted container
-        run: >-
-          docker run --rm
-          --network none
-          --read-only
-          --cap-drop ALL
-          --security-opt no-new-privileges
-          --pids-limit 256
-          --memory 1g
-          --cpus 2
-          --tmpfs /tmp:rw,nosuid,nodev,size=256m
-          --tmpfs /dev/shm:rw,nosuid,nodev,size=512m
-          --user "$(id -u):$(id -g)"
-          --env HOME=/tmp/home
-          --volume "$GITHUB_WORKSPACE/submission:/workspace/submission:ro"
-          --volume "$RUNNER_TEMP/grader-results:/workspace/grader-results:rw"
-          course-grader:local
-          node grader/src/grade.mjs
-          --submission "/workspace/submission/${{ needs.gate.outputs.submission_dir }}"
-          --lab "${{ needs.gate.outputs.lab }}"
-          --variant "${{ needs.gate.outputs.variant }}"
-          --results /workspace/grader-results
+        run: |
+          set -o pipefail
+          docker run --rm \
+            --network none \
+            --read-only \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --pids-limit 256 \
+            --memory 1g \
+            --cpus 2 \
+            --tmpfs /tmp:rw,nosuid,nodev,size=256m \
+            --tmpfs /dev/shm:rw,nosuid,nodev,size=512m \
+            --user "$(id -u):$(id -g)" \
+            --env HOME=/tmp/home \
+            --volume "$GITHUB_WORKSPACE/submission:/workspace/submission:ro" \
+            --volume "$RUNNER_TEMP/grader-results:/workspace/grader-results:rw" \
+            course-grader:local \
+            node docker-grader/index.mjs \
+            --submission "/workspace/submission/${{ needs.gate.outputs.submission_dir }}" \
+            --lab "${{ needs.gate.outputs.lab }}" \
+            --variant "${{ needs.gate.outputs.variant }}" \
+            --results /workspace/grader-results \
+            2>&1 | tee "$RUNNER_TEMP/grader-results/docker-run.log"
 
       - name: Set up Node.js for the trusted summary renderer
         if: always()
@@ -148,7 +151,7 @@ jobs:
 
       - name: Render check summary
         if: always()
-        run: node trusted/grader/src/render-summary.mjs --results "$RUNNER_TEMP/grader-results"
+        run: node trusted/reports/github-summary.mjs --results "$RUNNER_TEMP/grader-results"
 
       - name: Upload diagnostic reports
         if: always()
@@ -175,12 +178,6 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.utils_ref }}
           repository: ${{ inputs.utils_repository }}
-
-      - name: Checkout maintenance PR merge result
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          path: course
-          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0

@@ -1,0 +1,9 @@
+{
+  "taskId": "rgb-to-hex",
+  "cases": [
+    { "name": "red without spaces", "args": ["rgb(255,0,0)"], "expected": "#FF0000" },
+    { "name": "mixed values with spaces", "args": ["rgb(0, 255, 127)"], "expected": "#00FF7F" },
+    { "name": "black", "args": ["rgb(0,0,0)"], "expected": "#000000" },
+    { "name": "white", "args": ["rgb(255, 255, 255)"], "expected": "#FFFFFF" }
+  ]
+}

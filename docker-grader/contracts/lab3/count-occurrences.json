@@ -1,0 +1,13 @@
+{
+  "taskId": "count-occurrences",
+  "cases": [
+    { "name": "strings", "args": [["a", "b", "a"]], "expected": { "a": 2, "b": 1 } },
+    { "name": "numbers use string keys", "args": [[1, 2, 1, 1]], "expected": { "1": 3, "2": 1 } },
+    {
+      "name": "boolean values",
+      "args": [[true, false, true]],
+      "expected": { "true": 2, "false": 1 }
+    },
+    { "name": "empty array", "args": [[]], "expected": {} }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "taskId": "missing-number",
+  "cases": [
+    { "name": "missing middle", "args": [[1, 2, 4, 5]], "expected": 3 },
+    { "name": "missing first", "args": [[2, 3, 4]], "expected": 1 },
+    { "name": "missing last", "args": [[1, 2, 3, 4]], "expected": 5 },
+    { "name": "unordered values", "args": [[6, 2, 1, 5, 3]], "expected": 4 }
+  ]
+}

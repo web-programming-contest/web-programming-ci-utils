@@ -1,0 +1,13 @@
+{
+  "taskId": "sort-by-parity",
+  "cases": [
+    {
+      "name": "mixed positive values",
+      "args": [[3, 1, 2, 4, 7, 6]],
+      "assertion": "parity-partition"
+    },
+    { "name": "negative values", "args": [[-3, -2, -1, 0, 4]], "assertion": "parity-partition" },
+    { "name": "only odd values", "args": [[3, 1, 5]], "assertion": "parity-partition" },
+    { "name": "empty array", "args": [[]], "assertion": "parity-partition" }
+  ]
+}

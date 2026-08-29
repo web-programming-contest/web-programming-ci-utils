@@ -1,0 +1,25 @@
+{
+  "taskId": "analyzie-string",
+  "cases": [
+    {
+      "name": "ASCII letters, digits, space and punctuation",
+      "args": ["Hello 42!"],
+      "expected": { "letters": 5, "digits": 2, "spaces": 1, "other": 1 }
+    },
+    {
+      "name": "Unicode letters and a tab",
+      "args": ["Привет\tмир"],
+      "expected": { "letters": 9, "digits": 0, "spaces": 0, "other": 1 }
+    },
+    {
+      "name": "empty string",
+      "args": [""],
+      "expected": { "letters": 0, "digits": 0, "spaces": 0, "other": 0 }
+    },
+    {
+      "name": "emoji is one other Unicode symbol",
+      "args": ["A😀 7"],
+      "expected": { "letters": 1, "digits": 1, "spaces": 1, "other": 1 }
+    }
+  ]
+}

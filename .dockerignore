@@ -1,0 +1,11 @@
+**
+!package.json
+!package-lock.json
+!shared/
+!shared/**
+!reports/
+!reports/output.mjs
+!reports/browser-html.mjs
+!reports/browser-artifacts.mjs
+!docker-grader/
+!docker-grader/**

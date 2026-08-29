@@ -1,0 +1,4 @@
+{
+  "taskId": "layered-rectangles",
+  "checks": [{ "name": "position, overlap and stacking order", "kind": "layered-rectangles" }]
+}

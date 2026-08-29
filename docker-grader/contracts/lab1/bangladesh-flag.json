@@ -1,0 +1,11 @@
+{
+  "taskId": "bangladesh-flag",
+  "checks": [
+    {
+      "name": "centered Bangladesh flag circle",
+      "kind": "flag",
+      "circleColor": "red",
+      "backgroundColor": "green"
+    }
+  ]
+}

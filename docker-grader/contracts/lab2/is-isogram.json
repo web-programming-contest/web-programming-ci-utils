@@ -1,0 +1,10 @@
+{
+  "taskId": "is-isogram",
+  "cases": [
+    { "name": "unique letters", "args": ["Dermatoglyphics"], "expected": true },
+    { "name": "repeated lowercase letter", "args": ["aba"], "expected": false },
+    { "name": "hyphens ignored", "args": ["six-year-old"], "expected": true },
+    { "name": "case ignored", "args": ["Alphabet"], "expected": false },
+    { "name": "empty string", "args": [""], "expected": true }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "taskId": "sliding-window-sums",
+  "cases": [
+    { "name": "standard example", "args": [[1, 2, 3, 4, 5], 3], "expected": [6, 9, 12] },
+    { "name": "window of one", "args": [[-2, 4, 7], 1], "expected": [-2, 4, 7] },
+    { "name": "whole array", "args": [[2, -1, 4], 3], "expected": [5] },
+    { "name": "negative values", "args": [[-3, -2, -1, 5], 2], "expected": [-5, -3, 4] }
+  ]
+}

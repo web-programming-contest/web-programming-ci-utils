@@ -4,14 +4,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: [
-      'node_modules/**',
-      '01_УМК/**',
-      'grader/fixtures/**',
-      'grader-results/**',
-      'playwright-report/**',
-      'test-results/**',
-    ],
+    ignores: ['node_modules/**', '01_УМК/**', 'grader-results/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -20,6 +13,9 @@ export default tseslint.config(
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -36,7 +32,12 @@ export default tseslint.config(
     },
   },
   {
-    files: ['grader/**/*.{js,mjs,ts}'],
+    files: [
+      'docker-grader/**/*.{js,mjs,ts}',
+      'pr-gate/**/*.{js,mjs,ts}',
+      'reports/**/*.{js,mjs,ts}',
+      'shared/**/*.{js,mjs,ts}',
+    ],
     rules: {
       'no-console': 'off',
     },

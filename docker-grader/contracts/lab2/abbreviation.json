@@ -1,0 +1,9 @@
+{
+  "taskId": "abbreviation",
+  "cases": [
+    { "name": "three words", "args": ["JavaScript Object Notation"], "expected": "JSON" },
+    { "name": "extra spaces", "args": ["  Hyper   Text Markup Language "], "expected": "HTML" },
+    { "name": "lowercase words", "args": ["cascading style sheets"], "expected": "CSS" },
+    { "name": "single word", "args": ["Document"], "expected": "D" }
+  ]
+}

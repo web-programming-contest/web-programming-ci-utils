@@ -1,0 +1,8 @@
+{
+  "taskId": "task-status-list",
+  "checks": [{ "name": "status icons from pseudo-elements", "kind": "status-icons" }],
+  "elements": [
+    { "name": "task list", "selector": "ul, ol", "visible": true },
+    { "name": "tasks", "selector": "li", "minCount": 3 }
+  ]
+}

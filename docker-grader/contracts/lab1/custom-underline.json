@@ -1,0 +1,5 @@
+{
+  "taskId": "custom-underline",
+  "checks": [{ "name": "custom underline technique", "kind": "custom-underline" }],
+  "elements": [{ "name": "underlined text", "selector": "a, span, p, strong", "visible": true }]
+}

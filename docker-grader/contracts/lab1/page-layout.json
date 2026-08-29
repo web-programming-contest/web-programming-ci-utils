@@ -1,0 +1,4 @@
+{
+  "taskId": "page-layout",
+  "checks": [{ "name": "semantic page layout", "kind": "page-layout" }]
+}

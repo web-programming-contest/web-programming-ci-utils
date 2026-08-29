@@ -1,0 +1,29 @@
+{
+  "taskId": "zip-arrays",
+  "cases": [
+    {
+      "name": "two equal arrays",
+      "args": [
+        [1, 2],
+        ["a", "b"]
+      ],
+      "expected": [
+        [1, "a"],
+        [2, "b"]
+      ]
+    },
+    {
+      "name": "three arrays use shortest length",
+      "args": [
+        [1, 2, 3],
+        ["a", "b"],
+        [true, false, true]
+      ],
+      "expected": [
+        [1, "a", true],
+        [2, "b", false]
+      ]
+    },
+    { "name": "empty shortest array", "args": [[1, 2], []], "expected": [] }
+  ]
+}

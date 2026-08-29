@@ -1,0 +1,10 @@
+{
+  "taskId": "japan-flag",
+  "checks": [
+    {
+      "name": "centered Japanese flag circle",
+      "kind": "flag",
+      "circleColor": "red"
+    }
+  ]
+}

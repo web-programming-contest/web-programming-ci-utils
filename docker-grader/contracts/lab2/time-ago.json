@@ -1,0 +1,21 @@
+{
+  "taskId": "time-ago",
+  "clock": "2026-08-27T12:00:00Z",
+  "cases": [
+    {
+      "name": "five minutes",
+      "args": [{ "$date": "2026-08-27T11:55:00Z" }],
+      "expected": "5 минут назад"
+    },
+    {
+      "name": "two hours",
+      "args": [{ "$date": "2026-08-27T10:00:00Z" }],
+      "expected": "2 часа назад"
+    },
+    {
+      "name": "three days",
+      "args": [{ "$date": "2026-08-24T12:00:00Z" }],
+      "expected": "3 дня назад"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "taskId": "full-registration-form-country",
+  "elements": [
+    {
+      "name": "registration form",
+      "selector": "form",
+      "visible": true,
+      "css": { "background-color": "rgb(255, 255, 255)", "color": "rgb(0, 0, 0)" }
+    },
+    {
+      "name": "name fields",
+      "selector": "form input[type='text'], form input:not([type])",
+      "minCount": 2
+    },
+    { "name": "email", "selector": "form input[type='email']", "count": 1 },
+    { "name": "password fields", "selector": "form input[type='password']", "count": 2 },
+    { "name": "birth date", "selector": "form input[type='date']", "count": 1 },
+    { "name": "country", "selector": "form select", "count": 1 },
+    { "name": "consent", "selector": "form input[type='checkbox']", "count": 1 },
+    {
+      "name": "submit",
+      "selector": "form button[type='submit'], form input[type='submit']",
+      "visible": true,
+      "css": { "background-color": "rgb(0, 128, 0)", "color": "rgb(255, 255, 255)" }
+    }
+  ]
+}

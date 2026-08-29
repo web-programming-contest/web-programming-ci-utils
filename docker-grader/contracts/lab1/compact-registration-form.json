@@ -1,0 +1,9 @@
+{
+  "taskId": "compact-registration-form",
+  "checks": [{ "name": "two-column form layout", "kind": "two-column-form" }],
+  "elements": [
+    { "name": "text fields", "selector": "form input[type='text']", "minCount": 2 },
+    { "name": "gender controls", "selector": "form input[type='radio']", "minCount": 2 },
+    { "name": "language controls", "selector": "form input[type='checkbox']", "minCount": 3 }
+  ]
+}

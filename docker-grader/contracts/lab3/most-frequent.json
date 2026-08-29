@@ -1,0 +1,9 @@
+{
+  "taskId": "most-frequent",
+  "cases": [
+    { "name": "tie resolved by first appearance", "args": [[1, 2, 2, 3, 3]], "expected": 2 },
+    { "name": "strings", "args": [["a", "b", "a"]], "expected": "a" },
+    { "name": "single item", "args": [[42]], "expected": 42 },
+    { "name": "negative numbers", "args": [[-1, 2, -1, 2, -1]], "expected": -1 }
+  ]
+}

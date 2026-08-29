@@ -1,0 +1,16 @@
+{
+  "taskId": "confirmation-dialog",
+  "checks": [{ "name": "centered confirmation dialog", "kind": "dialog-centered" }],
+  "elements": [
+    {
+      "name": "OK button",
+      "selector": "button:has-text('OK'), button:has-text('Да'), button:has-text('Подтвердить')",
+      "visible": true
+    },
+    {
+      "name": "cancel button",
+      "selector": "button:has-text('Отмена'), button:has-text('Cancel')",
+      "visible": true
+    }
+  ]
+}

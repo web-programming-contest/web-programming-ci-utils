@@ -1,0 +1,14 @@
+{
+  "taskId": "zodiac-sign",
+  "cases": [
+    { "name": "Aries boundary", "args": [{ "$date": "2000-03-21T12:00:00Z" }], "expected": "Овен" },
+    {
+      "name": "Taurus boundary",
+      "args": [{ "$date": "2000-04-20T12:00:00Z" }],
+      "expected": "Телец"
+    },
+    { "name": "Cancer", "args": [{ "$date": "2000-07-01T12:00:00Z" }], "expected": "Рак" },
+    { "name": "Capricorn", "args": [{ "$date": "2000-12-25T12:00:00Z" }], "expected": "Козерог" },
+    { "name": "leap day Pisces", "args": [{ "$date": "2000-02-29T12:00:00Z" }], "expected": "Рыбы" }
+  ]
+}

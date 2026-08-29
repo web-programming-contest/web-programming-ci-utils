@@ -1,0 +1,15 @@
+{
+  "taskId": "responsive-nav",
+  "checks": [
+    {
+      "name": "horizontal/vertical responsive navigation",
+      "kind": "responsive-nav",
+      "selector": "nav a",
+      "minCount": 3,
+      "viewports": [
+        { "width": 1280, "minColumns": 3 },
+        { "width": 767, "columns": 1 }
+      ]
+    }
+  ]
+}

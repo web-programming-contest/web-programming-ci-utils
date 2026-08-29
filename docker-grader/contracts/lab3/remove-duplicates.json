@@ -1,0 +1,13 @@
+{
+  "taskId": "remove-duplicates",
+  "cases": [
+    {
+      "name": "numbers preserve first appearance",
+      "args": [[1, 2, 2, 5, 6, 7, 5]],
+      "expected": [1, 2, 5, 6, 7]
+    },
+    { "name": "strings", "args": [["a", "b", "a", "c", "b"]], "expected": ["a", "b", "c"] },
+    { "name": "all duplicates", "args": [[4, 4, 4]], "expected": [4] },
+    { "name": "empty array", "args": [[]], "expected": [] }
+  ]
+}

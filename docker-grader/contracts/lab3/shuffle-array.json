@@ -1,0 +1,12 @@
+{
+  "taskId": "shuffle-array",
+  "cases": [
+    {
+      "name": "numbers preserved in a new array",
+      "args": [[1, 2, 3, 4, 5]],
+      "assertion": "permutation"
+    },
+    { "name": "duplicates preserved", "args": [[1, 1, 2, 3]], "assertion": "permutation" },
+    { "name": "empty array", "args": [[]], "assertion": "permutation" }
+  ]
+}

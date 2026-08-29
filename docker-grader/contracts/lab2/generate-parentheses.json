@@ -1,0 +1,13 @@
+{
+  "taskId": "generate-parentheses",
+  "cases": [
+    { "name": "one pair", "args": [1], "assertion": "unordered", "expected": ["()"] },
+    { "name": "two pairs", "args": [2], "assertion": "unordered", "expected": ["(())", "()()"] },
+    {
+      "name": "three pairs",
+      "args": [3],
+      "assertion": "unordered",
+      "expected": ["((()))", "(()())", "(())()", "()(())", "()()()"]
+    }
+  ]
+}
