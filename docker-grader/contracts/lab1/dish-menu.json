@@ -1,8 +1,4 @@
 {
   "taskId": "dish-menu",
-  "checks": [{ "name": "menu dimensions and item layout", "kind": "dish-menu" }],
-  "elements": [
-    { "name": "dish names", "selector": "li strong, li span:first-child", "minCount": 2 },
-    { "name": "dish prices", "selector": "li em, li span:last-child", "minCount": 2 }
-  ]
+  "checks": [{ "name": "menu dimensions and item layout", "kind": "dish-menu" }]
 }

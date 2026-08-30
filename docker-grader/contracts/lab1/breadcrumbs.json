@@ -2,7 +2,13 @@
   "taskId": "breadcrumbs",
   "elements": [
     { "name": "list structure", "selector": "ul, ol", "visible": true },
-    { "name": "breadcrumb links", "selector": "li a", "minCount": 1 },
+    {
+      "name": "breadcrumb links",
+      "selector": "li a",
+      "minCount": 1,
+      "all": true,
+      "css": { "color": "rgb(0, 86, 255)" }
+    },
     {
       "name": "last breadcrumb",
       "selector": "li:last-child span",

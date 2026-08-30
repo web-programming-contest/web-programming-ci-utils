@@ -1,32 +1,55 @@
-import assert from 'node:assert/strict';
-
 export async function checkElement(page, contract) {
   const locator = page.locator(contract.selector);
   const count = await locator.count();
   if (contract.count !== undefined) {
-    assert.equal(count, contract.count, `${contract.name}: element count`);
-  }
-  if (contract.minCount !== undefined) {
-    assert.ok(
-      count >= contract.minCount,
-      `${contract.name}: minimum count is ${contract.minCount}`,
+    ensure(
+      count === contract.count,
+      `${checkLabel(contract)}: ожидалось элементов: ${contract.count}, найдено: ${count}.`,
     );
   }
+  if (contract.minCount !== undefined) {
+    ensure(
+      count >= contract.minCount,
+      `${checkLabel(contract)}: ожидалось не менее ${contract.minCount} элементов, найдено: ${count}.`,
+    );
+  }
+  const requiresTarget =
+    contract.visible ||
+    contract.textPattern ||
+    contract.pseudoContent ||
+    Object.keys(contract.attributes ?? {}).length > 0 ||
+    Object.keys(contract.css ?? {}).length > 0;
+  ensure(
+    !requiresTarget || count > 0,
+    `${checkLabel(contract)}: элемент не найден в DOM. Проверьте HTML-разметку и selector.`,
+  );
 
   const targets = contract.all ? await locator.all() : [locator.first()];
-  for (const target of targets) {
+  for (const [index, target] of targets.entries()) {
+    const targetLabel = checkLabel(contract, contract.all ? index : undefined);
     if (contract.visible) {
-      assert.ok(await target.isVisible(), `${contract.name}: element must be visible`);
+      ensure(
+        await target.isVisible(),
+        `${targetLabel}: элемент найден, но не отображается на странице. Проверьте display, visibility, opacity и размеры элемента.`,
+      );
     }
     if (contract.textPattern) {
       const text = (await target.textContent()) ?? '';
-      assert.match(text, new RegExp(contract.textPattern, contract.textFlags), contract.name);
+      const pattern = new RegExp(contract.textPattern, contract.textFlags);
+      ensure(
+        pattern.test(text),
+        `${targetLabel}: текст не соответствует шаблону ${pattern}. Получено: ${formatValue(compact(text))}.`,
+      );
     }
-    for (const [name, value] of Object.entries(contract.attributes ?? {})) {
-      assert.equal(await target.getAttribute(name), value, `${contract.name}: attribute ${name}`);
+    for (const [attribute, expected] of Object.entries(contract.attributes ?? {})) {
+      const actual = await target.getAttribute(attribute);
+      ensure(
+        actual === expected,
+        `${targetLabel}: неверное значение атрибута ${formatValue(attribute)}. Ожидалось: ${formatValue(expected)}. Получено: ${formatValue(actual)}.`,
+      );
     }
-    for (const [name, value] of Object.entries(contract.css ?? {})) {
-      assert.match(await cssValue(target, name), new RegExp(`^(?:${value})$`), contract.name);
+    for (const [property, expected] of Object.entries(contract.css ?? {})) {
+      await checkCssValue(target, property, expected, targetLabel);
     }
   }
 
@@ -36,15 +59,19 @@ export async function checkElement(page, contract) {
         elements.map((item) => getComputedStyle(item, pseudo).getPropertyValue('content')),
       contract.pseudoContent,
     );
-    assert.ok(
+    ensure(
       contents.some((content) => !['', 'none', 'normal', '""'].includes(content)),
-      `${contract.name}: ${contract.pseudoContent} must generate content`,
+      `${checkLabel(contract)}: псевдоэлемент ${formatValue(contract.pseudoContent)} не создаёт содержимое. Добавьте CSS-свойство content.`,
     );
   }
 }
 
 export async function checkInteraction(page, contract) {
   const locator = page.locator(contract.selector).first();
+  ensure(
+    (await locator.count()) > 0,
+    `${checkLabel(contract)}: элемент для действия ${formatValue(contract.action)} не найден.`,
+  );
   const before = Object.fromEntries(
     await Promise.all(
       (contract.changesCss ?? []).map(async (property) => [
@@ -59,19 +86,34 @@ export async function checkInteraction(page, contract) {
   } else if (contract.action === 'focus') {
     await locator.focus();
   } else {
-    throw new Error(`Unsupported browser action: ${contract.action}`);
-  }
-
-  for (const [name, value] of Object.entries(contract.css ?? {})) {
-    assert.match(await cssValue(locator, name), new RegExp(`^(?:${value})$`), contract.name);
-  }
-  for (const property of contract.changesCss ?? []) {
-    assert.notEqual(
-      await cssValue(locator, property),
-      before[property],
-      `${contract.name}: ${property} must change`,
+    throw new Error(
+      `${checkLabel(contract)}: grader не поддерживает действие ${formatValue(contract.action)}.`,
     );
   }
+
+  for (const [property, expected] of Object.entries(contract.css ?? {})) {
+    await checkCssValue(
+      locator,
+      property,
+      expected,
+      `${checkLabel(contract)} после действия ${formatValue(contract.action)}`,
+    );
+  }
+  for (const property of contract.changesCss ?? []) {
+    const after = await cssValue(locator, property);
+    ensure(
+      after !== before[property],
+      `${checkLabel(contract)}: CSS-свойство ${formatValue(property)} должно измениться после действия ${formatValue(contract.action)}. До действия: ${formatValue(before[property])}. После действия: ${formatValue(after)}.`,
+    );
+  }
+}
+
+async function checkCssValue(locator, property, expected, label) {
+  const actual = await cssValue(locator, property);
+  ensure(
+    actual === expected,
+    `${label}: неверное значение CSS-свойства ${formatValue(property)}. Ожидалось: ${formatValue(expected)}. Получено: ${formatValue(actual)}.`,
+  );
 }
 
 export async function cssValue(locator, property) {
@@ -79,4 +121,24 @@ export async function cssValue(locator, property) {
     (element, name) => getComputedStyle(element).getPropertyValue(name),
     property,
   );
+}
+
+function checkLabel(contract, index) {
+  const matchedElement = index === undefined ? '' : `, элемент №${index + 1}`;
+  return `Проверка «${contract.name}» (selector: ${formatValue(contract.selector)}${matchedElement})`;
+}
+
+function compact(value) {
+  const normalized = String(value).replace(/\s+/g, ' ').trim();
+  return normalized.length <= 160 ? normalized : `${normalized.slice(0, 157)}...`;
+}
+
+function ensure(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
+
+function formatValue(value) {
+  return value === null ? 'null' : JSON.stringify(String(value));
 }

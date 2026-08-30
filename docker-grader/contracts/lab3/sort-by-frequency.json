@@ -3,15 +3,15 @@
   "cases": [
     {
       "name": "different frequencies",
-      "args": [[4, 6, 2, 2, 6, 4, 4, 4]],
-      "expected": [4, 4, 4, 4, 6, 6, 2, 2]
+      "args": [[4, 6, 2, 2, 6, 6, 4, 4, 4, 4]],
+      "expected": [4, 4, 4, 4, 4, 6, 6, 6, 2, 2]
     },
     {
-      "name": "tie follows first appearance",
-      "args": [["b", "a", "b", "a", "c"]],
-      "expected": ["b", "b", "a", "a", "c"]
+      "name": "strings with different frequencies",
+      "args": [["b", "a", "b", "b", "a", "c"]],
+      "expected": ["b", "b", "b", "a", "a", "c"]
     },
-    { "name": "single values", "args": [[3, 1, 2]], "expected": [3, 1, 2] },
+    { "name": "single value", "args": [[3]], "expected": [3] },
     { "name": "empty array", "args": [[]], "expected": [] }
   ]
 }

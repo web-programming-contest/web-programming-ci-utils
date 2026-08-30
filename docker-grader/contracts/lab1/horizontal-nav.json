@@ -2,7 +2,15 @@
   "taskId": "horizontal-nav",
   "checks": [{ "name": "horizontal navigation and active item", "kind": "horizontal-nav" }],
   "elements": [
-    { "name": "navigation list", "selector": "nav ul, nav ol", "visible": true },
-    { "name": "navigation links", "selector": "nav a", "minCount": 3 }
+    {
+      "name": "navigation list",
+      "selector": "nav ul, nav ol, [role='navigation'] ul, [role='navigation'] ol, .nav, .menu, ul, ol",
+      "visible": true
+    },
+    {
+      "name": "navigation links",
+      "selector": "nav a, [role='navigation'] a, .nav a, .menu a, ul a, ol a",
+      "minCount": 2
+    }
   ]
 }

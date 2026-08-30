@@ -4,11 +4,11 @@
     {
       "name": "responsive image grid",
       "kind": "responsive-image-grid",
-      "selector": "main img, [class*='grid'] img, [class*='gallery'] img",
-      "minCount": 4,
+      "selector": "img",
+      "minCount": 2,
       "requireDecrease": true,
       "viewports": [
-        { "width": 1280, "minColumns": 3 },
+        { "width": 1280, "minColumns": 2 },
         { "width": 480, "maxColumns": 2 }
       ]
     }

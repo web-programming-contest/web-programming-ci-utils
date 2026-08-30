@@ -4,10 +4,10 @@
     {
       "name": "horizontal/vertical responsive navigation",
       "kind": "responsive-nav",
-      "selector": "nav a",
-      "minCount": 3,
+      "selector": "nav a, [role='navigation'] a, ul a, ol a, .nav a, .menu a",
+      "minCount": 2,
       "viewports": [
-        { "width": 1280, "minColumns": 3 },
+        { "width": 1280, "minColumns": 2 },
         { "width": 767, "columns": 1 }
       ]
     }

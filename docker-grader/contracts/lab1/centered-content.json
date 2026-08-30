@@ -1,8 +1,5 @@
 {
   "taskId": "centered-content",
   "checks": [{ "name": "flex and absolute positioning", "kind": "centered-content" }],
-  "elements": [
-    { "name": "image", "selector": "img", "visible": true },
-    { "name": "text", "selector": "p", "visible": true }
-  ]
+  "elements": [{ "name": "image", "selector": "img", "visible": true }]
 }

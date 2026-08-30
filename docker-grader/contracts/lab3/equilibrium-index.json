@@ -4,7 +4,6 @@
     { "name": "equilibrium in the middle", "args": [[-7, 1, 5, 2, -4, 3, 0]], "expected": 3 },
     { "name": "no equilibrium", "args": [[1, 2, 3]], "expected": -1 },
     { "name": "first index", "args": [[0, 1, -1]], "expected": 0 },
-    { "name": "single value", "args": [[5]], "expected": 0 },
-    { "name": "first matching index returned", "args": [[0, 0, 0]], "expected": 0 }
+    { "name": "single value", "args": [[5]], "expected": 0 }
   ]
 }

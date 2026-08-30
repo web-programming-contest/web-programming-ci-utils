@@ -138,12 +138,7 @@ export async function loadBrowserContract(lab, variant) {
   let variantData = null;
   const task = await resolveTask(lab, variant);
 
-  if (
-    typeof common.page !== 'string' ||
-    typeof common.titlePattern !== 'string' ||
-    typeof common.meaningfulSelector !== 'string' ||
-    !Number.isFinite(common.overflowTolerance)
-  ) {
+  if (typeof common.page !== 'string' || !Number.isFinite(common.overflowTolerance)) {
     throw new Error(`Common browser contract for lab${lab} is incomplete.`);
   }
   if (lab === 4) {

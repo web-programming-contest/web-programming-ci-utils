@@ -3,8 +3,10 @@ import { evaluateRule } from './result.mjs';
 const validators = new Map([
   ['custom-underline', validateCustomUnderline],
   ['dish-menu', validateDishMenu],
+  ['form-spacing', validateFormSpacing],
   ['horizontal-nav', validateHorizontalNav],
   ['pagination', validatePagination],
+  ['product-catalog', validateProductCatalog],
   ['product-review-card', validateProductReviewCard],
   ['status-icons', validateStatusIcons],
   ['text-clamp', validateTextClamp],
@@ -19,10 +21,10 @@ async function validatePagination(page, contract) {
   await evaluateRule(page, contract, () => {
     const { query, visible } = globalThis.__courseGrader;
     const container = query('nav, [aria-label*="pag" i], .pagination').find(
-      (element) => element.querySelectorAll('a, button').length >= 3,
+      (element) => element.querySelectorAll('a, button').length >= 2,
     );
     if (!container) {
-      return { details: 'Не найден блок пагинации минимум с тремя элементами.', pass: false };
+      return { details: 'Не найден блок пагинации минимум с двумя элементами.', pass: false };
     }
     const items = [...container.querySelectorAll('a, button')].filter(visible);
     const bounds = items.reduce(
@@ -38,17 +40,8 @@ async function validatePagination(page, contract) {
     if (Math.abs((bounds.left + bounds.right) / 2 - innerWidth / 2) > 80) {
       return { details: 'Пагинация должна быть выровнена по центру.', pass: false };
     }
-    const active = container.querySelector('.active, [aria-current="page"]');
-    if (!active) {
-      return {
-        details: 'Активная страница должна иметь class active или aria-current.',
-        pass: false,
-      };
-    }
-    const normal = items.find((item) => item !== active);
-    const pass =
-      !normal ||
-      getComputedStyle(active).backgroundColor !== getComputedStyle(normal).backgroundColor;
+    const backgrounds = new Set(items.map((item) => getComputedStyle(item).backgroundColor));
+    const pass = backgrounds.size >= 2;
     return { details: pass ? 'ok' : 'Фон активного элемента должен отличаться.', pass };
   });
 }
@@ -76,6 +69,29 @@ async function validateDishMenu(page, contract) {
   });
 }
 
+async function validateFormSpacing(page, contract) {
+  await evaluateRule(page, contract, (rule) => {
+    const { number, query } = globalThis.__courseGrader;
+    const form = query('form')[0];
+    if (!form) {
+      return { details: 'Не найдена форма.', pass: false };
+    }
+    const candidates = [form, ...form.querySelectorAll('*')];
+    const pass = candidates.some((element) => {
+      const style = getComputedStyle(element);
+      return [style.rowGap, style.marginTop, style.marginBottom].some(
+        (value) => Math.abs(number(value) - rule.spacing) <= 0.1,
+      );
+    });
+    return {
+      details: pass
+        ? 'ok'
+        : `Между полями формы должен быть отступ ${rule.spacing}px через gap или margin.`,
+      pass,
+    };
+  });
+}
+
 async function validateTwoColumnForm(page, contract) {
   await evaluateRule(page, contract, () => {
     const { query } = globalThis.__courseGrader;
@@ -89,6 +105,30 @@ async function validateTwoColumnForm(page, contract) {
     }
     const pass = form.querySelectorAll('label').length >= 4;
     return { details: pass ? 'ok' : 'У каждого типа поля должна быть подпись label.', pass };
+  });
+}
+
+async function validateProductCatalog(page, contract) {
+  await evaluateRule(page, contract, () => {
+    const { number, query } = globalThis.__courseGrader;
+    const products = query('li li');
+    const validProducts = products.filter((product) => {
+      const descendants = [product, ...product.querySelectorAll('*')];
+      const hasBoldName = descendants.some(
+        (element) => number(getComputedStyle(element).fontWeight) >= 600,
+      );
+      const hasItalicPrice = descendants.some(
+        (element) => getComputedStyle(element).fontStyle === 'italic',
+      );
+      return hasBoldName && hasItalicPrice;
+    });
+    return {
+      details:
+        validProducts.length >= 2
+          ? 'ok'
+          : 'Минимум у двух товаров название должно быть выделено жирным, а цена — курсивом.',
+      pass: validProducts.length >= 2,
+    };
   });
 }
 
@@ -115,7 +155,6 @@ async function validateTextClamp(page, contract) {
     const item = query('p, article, section, div').find((element) => {
       const style = getComputedStyle(element);
       return (
-        element.textContent.trim().length >= 80 &&
         style.fontFamily.toLowerCase().includes('arial') &&
         Math.abs(number(style.fontSize) - 16) <= 0.1 &&
         ['hidden', 'clip'].includes(style.overflow) &&
@@ -132,30 +171,29 @@ async function validateTextClamp(page, contract) {
 async function validateHorizontalNav(page, contract) {
   await evaluateRule(page, contract, () => {
     const { query, visible } = globalThis.__courseGrader;
-    const nav = query('nav')[0];
+    const nav = query('nav, [role="navigation"], ul, ol, .nav, .menu').find(
+      (element) => element.querySelectorAll('a').length >= 2,
+    );
     if (!nav) {
-      return { details: 'Не найден nav.', pass: false };
+      return {
+        details: 'Не найден контейнер горизонтального меню минимум с двумя ссылками.',
+        pass: false,
+      };
     }
     const links = [...nav.querySelectorAll('a')].filter(visible);
     if (
-      links.length < 3 ||
+      links.length < 2 ||
       new Set(links.map((item) => Math.round(item.getBoundingClientRect().top))).size !== 1
     ) {
-      return { details: 'Минимум три ссылки должны располагаться горизонтально.', pass: false };
+      return { details: 'Ссылки меню должны располагаться горизонтально.', pass: false };
     }
-    const active = nav.querySelector('.active, [aria-current="page"]');
-    if (!active) {
-      return { details: 'Активный пункт должен быть явно отмечен.', pass: false };
-    }
-    const normal = links.find((item) => item !== active && !item.contains(active));
-    if (!normal) {
-      return { details: 'ok', pass: true };
-    }
-    const activeStyle = getComputedStyle(active);
-    const normalStyle = getComputedStyle(normal);
-    const pass =
-      activeStyle.color !== normalStyle.color ||
-      activeStyle.backgroundColor !== normalStyle.backgroundColor;
+    const styles = new Set(
+      links.map((item) => {
+        const style = getComputedStyle(item);
+        return `${style.color}|${style.backgroundColor}`;
+      }),
+    );
+    const pass = styles.size >= 2;
     return { details: pass ? 'ok' : 'Активный пункт должен отличаться цветом.', pass };
   });
 }

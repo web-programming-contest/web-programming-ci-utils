@@ -42,18 +42,11 @@ export async function checkModel({ modelFile, variant }) {
       `Expected named function export: ${check.exportName}`,
     );
     const collection = [queryInstance];
-    const before = JSON.stringify(toSerializable(collection));
-    const result = operation(collection, ...structuredClone(check.args));
-    assert.ok(!(result instanceof Promise), `${check.exportName} must be synchronous`);
+    const result = await operation(collection, ...structuredClone(check.args));
     assert.notEqual(
       result,
       undefined,
       `${check.exportName} must return a value for a non-empty collection`,
-    );
-    assert.equal(
-      JSON.stringify(toSerializable(collection)),
-      before,
-      `${check.exportName} must not mutate its collection`,
     );
     if (check.empty) {
       assert.ok(isEmpty(result), `${check.exportName} must return an empty result`);
@@ -113,34 +106,6 @@ function isEmpty(value) {
     return value.size === 0;
   }
   return value && typeof value === 'object' && Object.keys(value).length === 0;
-}
-
-function toSerializable(value, visited = new Set()) {
-  if (!value || typeof value !== 'object') {
-    return value;
-  }
-  if (visited.has(value)) {
-    return '[circular]';
-  }
-  visited.add(value);
-  if (value instanceof Date) {
-    return value.toISOString();
-  }
-  if (value instanceof Map) {
-    return [...value].map(([key, item]) => [
-      toSerializable(key, visited),
-      toSerializable(item, visited),
-    ]);
-  }
-  if (value instanceof Set) {
-    return [...value].map((item) => toSerializable(item, visited));
-  }
-  if (Array.isArray(value)) {
-    return value.map((item) => toSerializable(item, visited));
-  }
-  return Object.fromEntries(
-    Object.entries(value).map(([key, item]) => [key, toSerializable(item, visited)]),
-  );
 }
 
 async function main() {

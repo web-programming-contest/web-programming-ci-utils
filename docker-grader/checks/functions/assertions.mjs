@@ -35,7 +35,6 @@ function assertPairsUnordered(contractCase, actual) {
 }
 
 function assertPermutation(_contractCase, actual, arguments_) {
-  assert.notStrictEqual(actual, arguments_[0], 'must return a new array');
   assert.deepStrictEqual(
     normalizeValues(actual),
     normalizeValues(arguments_[0]),

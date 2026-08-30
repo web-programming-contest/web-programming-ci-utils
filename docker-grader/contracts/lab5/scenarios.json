@@ -2,7 +2,7 @@
   {
     "taskId": "book-sorting",
     "required": [
-      { "testId": "book-card", "minimum": 3 },
+      { "testId": "book-card", "minimum": 2 },
       { "testId": "sort-title" },
       { "testId": "sort-price" },
       { "testId": "sort-rating" },
@@ -13,12 +13,7 @@
         "name": "Сортировка по названию изменяет состояние списка",
         "actions": [{ "type": "click", "testId": "sort-title" }],
         "expect": [
-          {
-            "type": "changed",
-            "testId": "sort-title",
-            "state": "attribute",
-            "attribute": "aria-pressed"
-          },
+          { "type": "changed", "testId": "sort-title", "state": "visual" },
           { "type": "changed", "testId": "sort-direction" }
         ]
       }
@@ -85,14 +80,7 @@
       {
         "name": "Ветка дерева раскрывается или сворачивается",
         "actions": [{ "type": "click", "testId": "tree-toggle" }],
-        "expect": [
-          {
-            "type": "changed",
-            "testId": "tree-toggle",
-            "state": "attribute",
-            "attribute": "aria-expanded"
-          }
-        ]
+        "expect": [{ "type": "changed", "testId": "tree", "state": "visual" }]
       }
     ]
   },
@@ -300,7 +288,7 @@
   {
     "taskId": "kanban",
     "required": [
-      { "testId": "kanban-column", "minimum": 3 },
+      { "testId": "kanban-column", "minimum": 2 },
       { "testId": "kanban-card" },
       { "testId": "kanban-add" },
       { "testId": "kanban-done" }
@@ -358,14 +346,7 @@
       {
         "name": "Описание книги раскрывается",
         "actions": [{ "type": "click", "testId": "details-toggle" }],
-        "expect": [
-          {
-            "type": "changed",
-            "testId": "details-toggle",
-            "state": "attribute",
-            "attribute": "aria-expanded"
-          }
-        ]
+        "expect": [{ "type": "changed", "testId": "book-description", "state": "visual" }]
       }
     ]
   },

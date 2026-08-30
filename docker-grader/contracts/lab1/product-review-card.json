@@ -2,7 +2,12 @@
   "taskId": "product-review-card",
   "checks": [{ "name": "product and review card dimensions", "kind": "product-review-card" }],
   "elements": [
-    { "name": "reviews title", "selector": "h2, h3, h4", "textPattern": "отзыв", "textFlags": "i" },
+    {
+      "name": "reviews title",
+      "selector": "h1, h2, h3, h4",
+      "textPattern": "отзыв",
+      "textFlags": "i"
+    },
     { "name": "review list", "selector": "ul", "visible": true },
     { "name": "reviews", "selector": "ul li", "minCount": 1 }
   ]

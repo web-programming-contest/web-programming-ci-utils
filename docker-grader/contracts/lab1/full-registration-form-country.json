@@ -1,5 +1,6 @@
 {
   "taskId": "full-registration-form-country",
+  "checks": [{ "name": "field spacing", "kind": "form-spacing", "spacing": 20 }],
   "elements": [
     {
       "name": "registration form",
@@ -19,7 +20,7 @@
     { "name": "consent", "selector": "form input[type='checkbox']", "count": 1 },
     {
       "name": "submit",
-      "selector": "form button[type='submit'], form input[type='submit']",
+      "selector": "form button:not([type]), form button[type='submit'], form input[type='submit']",
       "visible": true,
       "css": { "background-color": "rgb(0, 128, 0)", "color": "rgb(255, 255, 255)" }
     }

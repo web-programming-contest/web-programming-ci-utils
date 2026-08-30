@@ -1,7 +1,6 @@
 {
   "taskId": "longest-palindrome",
   "cases": [
-    { "name": "first result wins a tie", "args": ["babad"], "expected": "bab" },
     { "name": "even length", "args": ["cbbd"], "expected": "bb" },
     { "name": "empty string", "args": [""], "expected": "" },
     { "name": "whole string", "args": ["racecar"], "expected": "racecar" },

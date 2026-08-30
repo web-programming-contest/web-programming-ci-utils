@@ -22,7 +22,7 @@ function renderHtml(result) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Browser validation report</title>
+    <title>Отчёт браузерной проверки</title>
     <style>
       body { font: 16px/1.5 system-ui, sans-serif; margin: 2rem auto; max-width: 1100px; padding: 0 1rem; }
       table { border-collapse: collapse; width: 100%; }
@@ -34,8 +34,9 @@ function renderHtml(result) {
     </style>
   </head>
   <body>
-    <h1>Browser validation: ${result.passed ? 'passed' : 'failed'}</h1>
-    <table><thead><tr><th>Status</th><th>Check</th><th>Details</th></tr></thead><tbody>${rows}</tbody></table>
+    <h1>Браузерная проверка: ${result.passed ? 'пройдена' : 'не пройдена'}</h1>
+    <p>Лабораторная работа: ${result.lab}. Вариант: ${result.variant}.</p>
+    <table><thead><tr><th>Статус</th><th>Проверка</th><th>Подробности</th></tr></thead><tbody>${rows}</tbody></table>
   </body>
 </html>\n`;
 }

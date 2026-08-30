@@ -1,9 +1,9 @@
 {
   "taskId": "product-catalog",
+  "checks": [{ "name": "product typography", "kind": "product-catalog" }],
   "elements": [
     { "name": "category list", "selector": "ul, ol", "visible": true },
     { "name": "nested product lists", "selector": "li ul, li ol", "minCount": 1 },
-    { "name": "product names", "selector": "li li strong, li li b", "minCount": 2 },
-    { "name": "product prices", "selector": "li li em, li li i", "minCount": 2 }
+    { "name": "products", "selector": "li li", "minCount": 2 }
   ]
 }

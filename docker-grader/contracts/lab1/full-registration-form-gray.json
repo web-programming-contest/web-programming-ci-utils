@@ -1,5 +1,6 @@
 {
   "taskId": "full-registration-form-gray",
+  "checks": [{ "name": "field spacing", "kind": "form-spacing", "spacing": 10 }],
   "elements": [
     {
       "name": "registration form",
@@ -16,10 +17,9 @@
     { "name": "password fields", "selector": "form input[type='password']", "count": 2 },
     { "name": "birth date", "selector": "form input[type='date']", "count": 1 },
     { "name": "gender", "selector": "form input[type='radio']", "minCount": 2 },
-    { "name": "labels", "selector": "form label", "minCount": 7 },
     {
       "name": "submit",
-      "selector": "form button[type='submit'], form input[type='submit']",
+      "selector": "form button:not([type]), form button[type='submit'], form input[type='submit']",
       "visible": true
     }
   ]

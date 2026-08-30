@@ -9,6 +9,9 @@ export function extractCheckDiagnostics(check) {
   if (check.name === 'ESLint') {
     return extractEslintDiagnostics(check);
   }
+  if (check.name === 'Browser validation') {
+    return extractBrowserDiagnostics(check);
+  }
   return [];
 }
 
@@ -69,6 +72,18 @@ function extractEslintDiagnostics(check) {
   return uniqueDiagnostics(diagnostics);
 }
 
+function extractBrowserDiagnostics(check) {
+  const diagnostics = [];
+  for (const line of outputLines(check)) {
+    const match = /^-\s+[^:]+:\s+(.+)$/.exec(line.trim());
+    if (!match) {
+      continue;
+    }
+    diagnostics.push({ message: match[1] });
+  }
+  return uniqueDiagnostics(diagnostics);
+}
+
 function outputLines(check) {
   return [check.stdout, check.stderr]
     .filter(Boolean)
@@ -92,7 +107,8 @@ function formatDiagnostic(diagnostic) {
     .filter((value) => value !== undefined)
     .join(':');
   const rule = diagnostic.rule ? ` ${diagnostic.rule}` : '';
-  return `${location}${rule} — ${diagnostic.message}`;
+  const source = `${location}${rule}`.trim();
+  return source ? `${source} — ${diagnostic.message}` : diagnostic.message;
 }
 
 function uniqueDiagnostics(diagnostics) {

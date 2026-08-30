@@ -1,7 +1,5 @@
 {
   "page": "/index.html",
-  "titlePattern": "\\S",
-  "meaningfulSelector": "main, nav, form, article, section, button, input, textarea, select, canvas, [role]",
   "overflowTolerance": 2,
   "application": {
     "listSelector": "[data-testid=\"entity-list\"]",

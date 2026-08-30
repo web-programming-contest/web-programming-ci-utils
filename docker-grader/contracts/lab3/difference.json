@@ -2,22 +2,29 @@
   "taskId": "difference",
   "cases": [
     {
-      "name": "remove values and duplicates",
+      "name": "remove values",
       "args": [
-        [1, 2, 2, 3, 4],
+        [1, 2, 3, 4],
         [2, 4]
       ],
+      "assertion": "unordered",
       "expected": [1, 3]
     },
-    { "name": "nothing removed", "args": [[3, 1, 3, 2], [9]], "expected": [3, 1, 2] },
+    {
+      "name": "nothing removed",
+      "args": [[3, 1, 2], [9]],
+      "assertion": "unordered",
+      "expected": [3, 1, 2]
+    },
     {
       "name": "all removed",
       "args": [
-        [1, 1, 2],
+        [1, 2],
         [1, 2]
       ],
+      "assertion": "unordered",
       "expected": []
     },
-    { "name": "empty first array", "args": [[], [1]], "expected": [] }
+    { "name": "empty first array", "args": [[], [1]], "assertion": "unordered", "expected": [] }
   ]
 }

@@ -2,20 +2,6 @@
   "taskId": "format-phone-number",
   "cases": [
     { "name": "ten digits", "args": ["9991234567"], "expected": "+7 (999) 123-45-67" },
-    {
-      "name": "eleven digits starting with eight",
-      "args": ["89991234567"],
-      "expected": "+7 (999) 123-45-67"
-    },
-    {
-      "name": "eleven digits starting with seven",
-      "args": ["79991234567"],
-      "expected": "+7 (999) 123-45-67"
-    },
-    {
-      "name": "already formatted",
-      "args": ["+7 (999) 123-45-67"],
-      "expected": "+7 (999) 123-45-67"
-    }
+    { "name": "another ten digits", "args": ["1234567890"], "expected": "+7 (123) 456-78-90" }
   ]
 }

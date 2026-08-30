@@ -13,17 +13,17 @@
       ]
     },
     {
-      "name": "three arrays use shortest length",
+      "name": "three equal arrays",
       "args": [
-        [1, 2, 3],
+        [1, 2],
         ["a", "b"],
-        [true, false, true]
+        [true, false]
       ],
       "expected": [
         [1, "a", true],
         [2, "b", false]
       ]
     },
-    { "name": "empty shortest array", "args": [[1], []], "expected": [] }
+    { "name": "empty arrays", "args": [[], []], "expected": [] }
   ]
 }

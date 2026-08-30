@@ -4,7 +4,7 @@
   "interactions": [
     {
       "name": "pagination hover",
-      "selector": "nav a:not(.active):not([aria-current]), nav button:not(.active):not([aria-current]), .pagination a:not(.active)",
+      "selector": "a:not(.active):not([aria-current]), button:not(.active):not([aria-current])",
       "action": "hover",
       "changesCss": ["background-color"]
     }

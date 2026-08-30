@@ -29,7 +29,9 @@ function createLab4Scenario(page, pageUrl, application, ui) {
         assert.equal(await control.count(), 1, `form control [name="${name}"] is required`);
       }
       assert.ok(
-        (await form.locator('button[type="submit"], input[type="submit"]').count()) > 0,
+        (await form
+          .locator('button:not([type]), button[type="submit"], input[type="submit"]')
+          .count()) > 0,
         'entity form must have a submit control',
       );
       initialCount = await page.locator(application.cardSelector).count();

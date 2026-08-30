@@ -66,9 +66,14 @@ async function validateHorizontalCards(page, contract) {
 async function validatePageLayout(page, contract) {
   await evaluateRule(page, contract, () => {
     const { number, query, rgb } = globalThis.__courseGrader;
-    const elements = ['header', 'aside', 'main', 'footer'].map((selector) => query(selector)[0]);
+    const elements = [
+      'header, [role="banner"], .header',
+      'aside, [class*="sidebar"], [class*="aside"]',
+      'main, [role="main"], .main',
+      'footer, [role="contentinfo"], .footer',
+    ].map((selector) => query(selector)[0]);
     if (elements.some((item) => !item)) {
-      return { details: 'Нужны header, aside, main и footer.', pass: false };
+      return { details: 'Нужны заголовок, боковая панель, основная область и футер.', pass: false };
     }
     if (Math.abs(elements[1].getBoundingClientRect().width - 300) > 1) {
       return { details: 'Ширина aside должна быть 300px.', pass: false };
@@ -117,7 +122,7 @@ async function validateDialog(page, contract) {
     }
     if (
       !dialog.querySelector('h1, h2, h3') ||
-      !dialog.querySelector('p') ||
+      dialog.textContent.trim().length === 0 ||
       dialog.querySelectorAll('button').length < 2
     ) {
       return { details: 'Диалог должен содержать заголовок, текст и две кнопки.', pass: false };
