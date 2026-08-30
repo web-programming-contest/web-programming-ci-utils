@@ -1,5 +1,6 @@
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { sanitizeTerminalOutput } from '../../shared/terminal.mjs';
 
 const outputLimit = 60_000;
 
@@ -65,7 +66,7 @@ export function localBinary(root, name) {
 }
 
 function truncateOutput(value) {
-  const output = String(value ?? '').trim();
+  const output = sanitizeTerminalOutput(value).trim();
   if (output.length <= outputLimit) {
     return output;
   }

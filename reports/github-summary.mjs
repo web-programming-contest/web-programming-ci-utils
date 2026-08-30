@@ -3,6 +3,8 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from '../shared/args.mjs';
+import { sanitizeTerminalOutput } from '../shared/terminal.mjs';
+import { extractCheckDiagnostics, summarizeCheckDiagnostics } from './check-diagnostics.mjs';
 
 const reportOutputLimit = 12_000;
 
@@ -21,6 +23,18 @@ async function main() {
 function emitFailureAnnotations(result) {
   const failures = (result.checks ?? []).filter((check) => check.status === 'failed');
   for (const check of failures) {
+    const diagnostics = extractCheckDiagnostics(check);
+    if (diagnostics.length > 0) {
+      for (const diagnostic of diagnostics.slice(0, 10)) {
+        emitDiagnosticAnnotation(check.name, diagnostic);
+      }
+      if (diagnostics.length > 10) {
+        console.error(
+          `::error title=${escapeWorkflowProperty(check.name)}::${escapeWorkflowCommand(`Показаны первые 10 из ${diagnostics.length} ошибок. Полный список находится в отчёте.`)}`,
+        );
+      }
+      continue;
+    }
     const details = [check.error, check.stderr, check.stdout].filter(Boolean).join('\n\n');
     const message = limitOutput(details || 'Проверка завершилась с ошибкой.').slice(-4_000);
     const title = escapeWorkflowProperty(check.name || 'Course grader');
@@ -31,6 +45,23 @@ function emitFailureAnnotations(result) {
       `::error title=Course grader::${escapeWorkflowCommand(limitOutput(result.error))}`,
     );
   }
+}
+
+function emitDiagnosticAnnotation(checkName, diagnostic) {
+  const properties = [`title=${escapeWorkflowProperty(checkName)}`];
+  if (diagnostic.file) {
+    properties.push(`file=${escapeWorkflowProperty(diagnostic.file)}`);
+  }
+  if (diagnostic.line) {
+    properties.push(`line=${diagnostic.line}`);
+  }
+  if (diagnostic.column) {
+    properties.push(`col=${diagnostic.column}`);
+  }
+  const rule = diagnostic.rule ? ` [${diagnostic.rule}]` : '';
+  console.error(
+    `::error ${properties.join(',')}::${escapeWorkflowCommand(`${diagnostic.message}${rule}`)}`,
+  );
 }
 
 function escapeWorkflowCommand(value) {
@@ -149,12 +180,13 @@ export function renderReport(result) {
 }
 
 function renderFailure(check) {
+  const summary = checkSummary(check);
   const lines = [
     `<details open><summary><strong>❌ ${escapeHtml(check.name)}</strong></summary>`,
     '',
   ];
-  if (check.error) {
-    lines.push(`<p><strong>Причина:</strong> ${escapeHtml(check.error)}</p>`);
+  if (summary) {
+    lines.push(`<p><strong>Причина:</strong> ${escapeHtml(summary)}</p>`);
   }
   if (check.exitCode !== null && check.exitCode !== undefined) {
     lines.push(`<p><strong>Exit code:</strong> ${escapeHtml(check.exitCode)}</p>`);
@@ -210,6 +242,10 @@ function checkSummary(check) {
   if (check.status === 'passed') {
     return 'Проверка завершилась успешно.';
   }
+  const concrete = summarizeCheckDiagnostics(check);
+  if (concrete) {
+    return concrete;
+  }
   if (check.error && !check.error.startsWith('Процесс завершился с кодом')) {
     return check.error;
   }
@@ -237,7 +273,7 @@ function formatCommand(command) {
 }
 
 function limitOutput(value) {
-  const output = String(value);
+  const output = sanitizeTerminalOutput(value);
   if (output.length <= reportOutputLimit) {
     return output;
   }
