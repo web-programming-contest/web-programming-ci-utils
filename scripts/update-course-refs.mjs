@@ -38,7 +38,8 @@ function printHelp() {
   console.log(`Usage: node scripts/update-course-refs.mjs [options]
 
 Updates submission.yml and progress-report.yml in the contest template and in
-every course repository explicitly passed with --repo.
+every course repository explicitly passed with --repo. Also synchronizes the
+canonical progress report schedule from ci-utils.
 
 Options:
   --sha SHA          Pin an explicit full commit SHA instead of utils HEAD

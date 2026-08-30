@@ -158,6 +158,8 @@ npm run refs:update:courses -- \
 ```
 
 Команда всегда обновляет template, затем каждый явно перечисленный репозиторий.
+Помимо SHA и student-facing конфигов она переносит каноническое расписание
+progress report из `scripts/workflow-refs.mjs`.
 
 ### 5.3. Настройки GitHub Actions
 
@@ -198,6 +200,11 @@ workflow.
 
 Student-facing конфиги имеют единственный источник в
 `docker-grader/config/`.
+
+Расписание caller workflow `progress-report.yml` имеет отдельный канонический
+источник в `scripts/workflow-refs.mjs`. Команды `template:sync` и
+`refs:update:courses` переносят его в template; `refs:update:courses` также
+переносит расписание во все явно переданные репозитории курсов.
 
 | Источник в `ci-utils`  | Файл в template/курсе | Назначение                                      |
 | ---------------------- | --------------------- | ----------------------------------------------- |
@@ -622,6 +629,13 @@ Progress report сканирует основную ветку курса. Ка�
 структуре. Это предполагает, что преподаватель merge-ит только защищённые
 работы.
 
+Полностью отсутствующий каталог `surname.name/labN` считается несданной работой
+и отображается как `—`. Если каталог существует, но обязательных файлов нет,
+отчёт считает это ошибкой структуры и добавляет строку с предупреждением.
+Progress report не запускает функциональные или браузерные контракты повторно:
+статус принятой работы опирается на структуру основной ветки и правило, что в неё
+merge-ятся только успешно проверенные PR.
+
 Для каждого slug определяется:
 
 - GitHub login из первого merged PR;
@@ -642,16 +656,26 @@ progress.json
 Markdown попадает в Job Summary, все три файла — в artifact `progress-report`
 на 90 дней.
 
+Для ручного запуска откройте репозиторий курса на GitHub, выберите
+**Actions → Progress report → Run workflow** и нужную основную ветку. Это
+предпочтительный способ построить отчёт непосредственно по удалённому
+репозиторию: workflow сам получает полный checkout и токен с правами
+`contents: read` и `pull-requests: read`.
+
 Caller workflow template запускается вручную и по расписанию:
 
 ```yaml
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 3 * * 1'
+    - cron: '30 0 * * 1'
+      timezone: 'Europe/Moscow'
 ```
 
-Cron GitHub Actions интерпретируется в UTC.
+Workflow запускается один раз в неделю, в ночь с воскресенья на понедельник,
+примерно в `00:30` по московскому времени. Явный IANA timezone
+`Europe/Moscow` делает расписание независимым от UTC-смещения. GitHub Actions
+может запустить scheduled workflow с небольшой задержкой при высокой нагрузке.
 
 ## 14. Полный справочник npm-скриптов `ci-utils`
 
@@ -714,7 +738,8 @@ npm run grade -- \
 
 ### `npm run report`
 
-Формирует отчёт прогресса.
+Формирует отчёт прогресса. `--root` принимает путь к полному локальному Git
+checkout курса, а не URL удалённого репозитория.
 
 Вывод Markdown в stdout:
 
@@ -740,6 +765,24 @@ npm run report -- \
   --output-dir /tmp/progress
 ```
 
+Для публичного репозитория команда может выполняться без `GITHUB_TOKEN`. Чтобы
+построить отчёт по удалённому репозиторию, сначала клонируйте его вместе со всей
+историей, затем передайте путь в `--root`:
+
+```bash
+REPORT_ROOT=$(mktemp -d)
+git clone https://github.com/YOUR-ORG/course-repo.git "$REPORT_ROOT/course"
+npm run report -- \
+  --root "$REPORT_ROOT/course" \
+  --repository YOUR-ORG/course-repo \
+  --output-dir "$REPORT_ROOT/progress"
+```
+
+Не используйте shallow clone (`--depth 1`): даты принятия определяются по
+истории коммитов. Для приватного репозитория самому `git clone` потребуются
+настроенные Git credentials, даже если генератор запускается без
+`GITHUB_TOKEN`.
+
 Аргументы:
 
 | Аргумент                       | Описание                                                         |
@@ -751,7 +794,11 @@ npm run report -- \
 | `--output-dir PATH`            | Сразу создать `progress.md/csv/json`                             |
 
 `--output-dir` нельзя комбинировать с `--format` или `--output`.
-Для API рекомендуется передать `GITHUB_TOKEN`.
+`--repository` можно не указывать, если `OWNER/REPO` корректно определяется из
+`origin`. Без `GITHUB_TOKEN` публичный GitHub API имеет низкий rate limit; при
+его исчерпании отчёт сохранит состояние лабораторных, но может не определить
+GitHub login или вариант. Для стабильного результата рекомендуется передать
+`GITHUB_TOKEN` через environment variable.
 
 ### `npm run refs:update:courses`
 
@@ -769,7 +816,8 @@ npm run refs:update:courses -- \
 2. Находит ровно один `utils_ref` в этом файле.
 3. Повторяет проверку для `progress-report.yml`.
 4. Заменяет четыре значения на новый SHA.
-5. Синхронизирует девять student-facing конфигов.
+5. Синхронизирует каноническое расписание progress report.
+6. Синхронизирует девять student-facing конфигов.
 
 Опции:
 
@@ -814,7 +862,8 @@ npm run refs:update:test -- --repo ../web-programming-ci-test
 
 ### `npm run template:sync`
 
-Копирует девять канонических конфигов в sibling directory:
+Копирует каноническое расписание progress report и девять конфигов в sibling
+directory:
 
 ```text
 ../web-programming-contest-template
@@ -824,8 +873,9 @@ npm run refs:update:test -- --repo ../web-programming-ci-test
 npm run template:sync
 ```
 
-Скрипт записывает только отсутствующие или отличающиеся mapped-файлы. Он не
-обновляет SHA workflow и не удаляет посторонние файлы.
+Скрипт обновляет расписание в существующем `progress-report.yml` и записывает
+только отсутствующие или отличающиеся mapped-файлы. Он не обновляет SHA workflow
+и не удаляет посторонние файлы.
 
 ### `npm run contracts:check`
 
@@ -1166,6 +1216,14 @@ Lock-файл удалён из `ci-utils`, хотя Dockerfile требует �
 - workflow имеет `pull-requests: read`;
 - API token не исчерпал rate limit;
 - локальный запуск получил `GITHUB_TOKEN` и правильный `--repository`.
+
+### Progress report показывает ошибку у несданной лабораторной
+
+Полностью отсутствующий каталог лабораторной должен отображаться как `—` без
+предупреждения. Предупреждение означает, что каталог уже существует в основной
+ветке, но не удовлетворяет обязательной структуре. Проверьте tracked-файлы
+внутри `surname.name/labN`: частично добавленный `README.md`, `.gitkeep` или
+другой файл превращает каталог в существующую, но некорректную сдачу.
 
 ### Update script сообщает dirty worktree
 

@@ -60,7 +60,8 @@ workflow вызывают закреплённый commit utils.
 - `package.json` с командами и теми же точными версиями локальных инструментов.
 
 Канонические версии этих девяти student-facing файлов находятся в
-`docker-grader/config/`. Их не нужно редактировать в template вручную.
+`docker-grader/config/`, а расписание progress report — в
+`scripts/workflow-refs.mjs`. Их не нужно редактировать в template вручную.
 
 ## Публикация
 
@@ -73,9 +74,10 @@ npm run refs:update:courses
 ```
 
 Скрипт берёт полный SHA из `HEAD`, обновляет `uses: ...@SHA` и `utils_ref` в
-обоих caller workflow, а затем синхронизирует student-facing конфиги из grader.
-Сначала всегда обновляется template. Все репозитории групп указываются явно;
-один `--repo` соответствует одному локальному клону:
+обоих caller workflow, переносит каноническое расписание progress report и
+синхронизирует student-facing конфиги из grader. Сначала всегда обновляется
+template. Все репозитории групп указываются явно; один `--repo` соответствует
+одному локальному клону:
 
 ```bash
 npm run refs:update:courses -- \
@@ -87,7 +89,8 @@ npm run refs:update:courses -- \
 Без `--repo` обновляется только `web-programming-contest-template`. Скрипт не
 ищет репозитории по именам и не изменяет неуказанные репозитории.
 
-Если нужно только заново собрать template из текущих конфигов без смены SHA:
+Если нужно только заново собрать template из текущих конфигов и расписания без
+смены SHA:
 
 ```bash
 npm run template:sync
@@ -167,6 +170,47 @@ annotation и видна из PR в `Checks`; для этого не нужны 
 secrets. Полный отчёт находится на странице конкретного workflow run в блоке
 `Summary`. Docker build/run логи, браузерные screenshot, trace и HTML-report
 загружаются в artifact `grader-results-<PR number>`.
+
+## Отчёт прогресса группы
+
+Progress report строится по основной ветке репозитория курса. Лабораторная
+считается принятой, если её каталог существует в полном Git checkout и содержит
+все обязательные файлы. Отсутствующий каталог отображается как несданная работа
+(`—`) без предупреждения; существующий каталог с неполной или неверной
+структурой отображается как ошибка.
+
+В репозитории курса откройте **Actions → Progress report → Run workflow**.
+Markdown-таблица появится в Job Summary, а `progress.md`, `progress.csv` и
+`progress.json` — в artifact `progress-report`. Автоматический запуск происходит
+один раз в неделю, в ночь с воскресенья на понедельник, примерно в `00:30` по
+московскому времени.
+
+Локальный отчёт по уже клонированному курсу:
+
+```bash
+npm run report -- \
+  --root /path/to/course \
+  --output-dir /tmp/progress
+```
+
+Генератор не принимает URL репозитория в `--root`: ему нужны рабочее дерево и
+полная история Git. Чтобы построить отчёт по удалённому репозиторию без
+`GITHUB_TOKEN`, сначала создайте временный полный clone:
+
+```bash
+REPORT_ROOT=$(mktemp -d)
+git clone https://github.com/YOUR-ORG/course-repo.git "$REPORT_ROOT/course"
+npm run report -- \
+  --root "$REPORT_ROOT/course" \
+  --repository YOUR-ORG/course-repo \
+  --output-dir "$REPORT_ROOT/progress"
+```
+
+Не используйте `--depth 1`: полная история нужна для определения дат первой
+сдачи. Для публичного репозитория GitHub API доступен без токена, но действует
+низкий лимит запросов; при его исчерпании автор или вариант могут не
+определиться. Полный справочник приведён в разделе
+[Progress report](docs/USAGE.md#13-progress-report).
 
 Каждая задача lab1 имеет отдельный браузерный контракт, а каждая функция
 lab2/lab3 — отдельный JSON-набор входов и результатов. Для lab4 проверяются

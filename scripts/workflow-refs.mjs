@@ -4,6 +4,10 @@ import path from 'node:path';
 
 const commitPattern = /^[0-9a-f]{40}$/i;
 const workflowNames = ['submission.yml', 'progress-report.yml'];
+const progressSchedule = {
+  cron: '30 0 * * 1',
+  timezone: 'Europe/Moscow',
+};
 
 export function resolveUtilsCommit(utilsRoot, options = {}) {
   if (options.sha) {
@@ -35,8 +39,12 @@ export async function updateWorkflowRefs(repositoryRoot, sha) {
       }
       throw error;
     });
+    const synchronizedContents =
+      workflowName === 'progress-report.yml'
+        ? patchProgressSchedule(contents, filename)
+        : contents;
     updates.push({
-      contents: patchWorkflow(contents, normalizedSha, filename),
+      contents: patchWorkflow(synchronizedContents, normalizedSha, filename),
       filename,
     });
   }
@@ -50,6 +58,26 @@ export async function updateWorkflowRefs(repositoryRoot, sha) {
     sha: normalizedSha,
     workflows: updates.map(({ filename }) => filename),
   };
+}
+
+export async function syncProgressSchedule(repositoryRoot) {
+  const filename = path.join(
+    path.resolve(repositoryRoot),
+    '.github',
+    'workflows',
+    'progress-report.yml',
+  );
+  const contents = await readFile(filename, 'utf8').catch((error) => {
+    if (error.code === 'ENOENT') {
+      throw new Error(`Required caller workflow is missing: ${filename}`);
+    }
+    throw error;
+  });
+  const synchronizedContents = patchProgressSchedule(contents, filename);
+  if (synchronizedContents !== contents) {
+    await writeFile(filename, synchronizedContents, 'utf8');
+  }
+  return filename;
 }
 
 export function parseOptions(argv) {
@@ -92,6 +120,25 @@ function patchWorkflow(contents, sha, filename) {
   const refPattern = /^(\s*utils_ref:\s*["']?)([0-9a-f]{40})(["']?\s*(?:#.*)?)$/gim;
   const uses = replaceExactlyOnce(contents, usesPattern, sha, `${filename}: uses`);
   return replaceExactlyOnce(uses, refPattern, sha, `${filename}: utils_ref`);
+}
+
+function patchProgressSchedule(contents, filename) {
+  const pattern =
+    /^([ \t]*)-[ \t]+cron:[^\r\n]*(\r?\n)(?:\1[ \t]+timezone:[^\r\n]*(\r?\n|$))?/gm;
+  let matches = 0;
+  const result = contents.replace(
+    pattern,
+    (_match, indent, cronEol, timezoneEol) => {
+      matches += 1;
+      return `${indent}- cron: "${progressSchedule.cron}"${cronEol}${indent}  timezone: "${progressSchedule.timezone}"${timezoneEol ?? cronEol}`;
+    },
+  );
+  if (matches !== 1) {
+    throw new Error(
+      `${filename}: schedule must contain exactly one cron entry; found ${matches}.`,
+    );
+  }
+  return result;
 }
 
 function replaceExactlyOnce(contents, pattern, sha, label) {

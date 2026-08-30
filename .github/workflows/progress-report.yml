@@ -1,5 +1,7 @@
 name: Reusable progress report
 
+# The course caller schedule is synchronized from scripts/workflow-refs.mjs.
+
 on:
   workflow_call:
     inputs:
