@@ -2,6 +2,10 @@
 
 Центральный доверенный grader для автоматизированной приёмки лабораторных работ. Репозиторий содержит CLI, открытый банк задач, декларативные контракты, ограниченный Docker runtime и reusable GitHub Actions workflows. Работы студентов здесь не хранятся.
 
+Полная инструкция по установке, всем CLI-скриптам, подключению репозиториев
+групп, эксплуатации и диагностике находится в
+[docs/USAGE.md](docs/USAGE.md).
+
 ## Состав
 
 ```text
@@ -21,7 +25,7 @@ web-programming-ci-utils/
 │   │   └── browser/
 │   │       ├── labs/         # Suite-оркестраторы lab1/lab4/lab5
 │   │       └── rules/        # Переиспользуемые DOM/CSS-правила
-│   ├── config/               # Доверенные конфиги статических проверок
+│   ├── config/               # Единственный источник конфигов grader и студентов
 │   ├── contracts/labN/       # Входы и ожидаемые результаты по задачам
 │   ├── tasks/                # Банк задач и соответствие variant → task
 │   ├── runtime/              # Запуск процессов, сбор файлов и локальный сервер
@@ -35,8 +39,28 @@ web-programming-ci-utils/
 │   ├── browser-artifacts.mjs # Screenshot и Playwright trace
 │   └── progress.mjs          # Прогресс группы в Markdown/CSV/JSON
 ├── shared/                   # Общий разбор аргументов CLI
+├── scripts/                  # Синхронизация template/course и проверка контрактов
 └── .github/workflows/        # Reusable workflows и CI самого utils-репозитория
 ```
+
+## Разделение ответственности
+
+`web-programming-ci-utils` — единственное место, где живут логика проверок,
+версии инструментов, задачи и тестовые контракты. Репозиторий курса не содержит
+копию grader и не выполняет студенческий `package.json`: его два маленьких caller
+workflow вызывают закреплённый commit utils.
+
+`web-programming-contest-template` содержит только то, что должно сразу появиться
+в новом репозитории курса:
+
+- `.github/workflows/submission.yml` и `progress-report.yml`;
+- `CODEOWNERS`;
+- `.editorconfig`, `.gitignore`, `.nvmrc`, `.prettierignore`, `.prettierrc.json`;
+- `eslint.config.mjs`, `.stylelintrc.json`, `.htmlvalidate.json`;
+- `package.json` с командами и теми же точными версиями локальных инструментов.
+
+Канонические версии этих девяти student-facing файлов находятся в
+`docker-grader/config/`. Их не нужно редактировать в template вручную.
 
 ## Публикация
 
@@ -49,8 +73,9 @@ npm run refs:update:courses
 ```
 
 Скрипт берёт полный SHA из `HEAD`, обновляет `uses: ...@SHA` и `utils_ref` в
-обоих caller workflow шаблона. Все репозитории групп указываются явно; один
-`--repo` соответствует одному локальному клону:
+обоих caller workflow, а затем синхронизирует student-facing конфиги из grader.
+Сначала всегда обновляется template. Все репозитории групп указываются явно;
+один `--repo` соответствует одному локальному клону:
 
 ```bash
 npm run refs:update:courses -- \
@@ -61,6 +86,17 @@ npm run refs:update:courses -- \
 
 Без `--repo` обновляется только `web-programming-contest-template`. Скрипт не
 ищет репозитории по именам и не изменяет неуказанные репозитории.
+
+Если нужно только заново собрать template из текущих конфигов без смены SHA:
+
+```bash
+npm run template:sync
+```
+
+PR Gate сверяет корневые конфиги base-ветки курса с конфигами закреплённого
+grader. Поэтому SHA и конфиги следует обновлять одной командой выше и
+коммитить вместе. Если они разъехались, студенческий код не запускается, а gate
+показывает список устаревших файлов.
 
 Тестовые репозитории обновляются отдельной командой:
 
@@ -99,14 +135,38 @@ npm run setup:browser
 npm run validate
 ```
 
+### Команды для студента
+
+После создания или клонирования репозитория курса один раз установить локальные
+инструменты:
+
+```bash
+npm install
+```
+
+Для своей работы студент указывает ровно свой каталог:
+
+```bash
+npm run format -- surname.name/lab2
+npm run format:check -- surname.name/lab2
+npm run lint:js -- surname.name/lab2
+npm run lint:css -- "surname.name/lab2/**/*.css"
+npm run lint:html -- "surname.name/lab2/**/*.html"
+```
+
+Функциональные и браузерные контракты запускаются только доверенным grader;
+локальный `package.json` студента CI не исполняет.
+
 ## Отчёт CI
 
 После запуска grader формирует `summary.json` и человекочитаемый `report.md`.
-Тот же отчёт выводится в GitHub Actions Job Summary: таблица показывает статус
-и время каждого этапа, а ниже раскрывается stdout/stderr каждого упавшего этапа.
-Проверки продолжаются после отдельного падения, поэтому один запуск показывает
-сразу все найденные проблемы. Docker build/run логи, браузерные screenshot,
-trace и HTML-report загружаются в artifact `grader-results-<PR number>`.
+Workflow явно добавляет `report.md` в GitHub Actions Job Summary: таблица
+показывает статус и время каждого этапа, а ниже раскрывается stdout/stderr
+каждого упавшего этапа. Каждая ошибка дополнительно публикуется как GitHub
+annotation и видна из PR в `Checks`; для этого не нужны write-permissions и
+secrets. Полный отчёт находится на странице конкретного workflow run в блоке
+`Summary`. Docker build/run логи, браузерные screenshot, trace и HTML-report
+загружаются в artifact `grader-results-<PR number>`.
 
 Каждая задача lab1 имеет отдельный браузерный контракт, а каждая функция
 lab2/lab3 — отдельный JSON-набор входов и результатов. Для lab4 проверяются
@@ -117,7 +177,8 @@ lab2/lab3 — отдельный JSON-набор входов и результ�
 и другие взаимодействия. Выбранный контракт и связь варианта с задачей
 валидируются непосредственно во время сдачи.
 
-Google-style конфиги, которые CI использует для проверки работ, находятся в
-`docker-grader/config/`.
+Команда `npm run contracts:check` проверяет все 200 сочетаний из 5 лабораторных
+и 40 вариантов и гарантирует, что каждая ссылка разрешается в существующую
+задачу и контракт.
 
 Открытые контракты задач находятся в [docs/TASK_CONTRACTS.md](docs/TASK_CONTRACTS.md).

@@ -7,21 +7,28 @@ export function getResponsiveValidator(kind) {
 }
 
 async function validateResponsiveRule(page, contract) {
+  const originalViewport = page.viewportSize();
   const snapshots = [];
-  for (const viewport of contract.viewports) {
-    await page.setViewportSize({ height: 720, width: viewport.width });
-    await page.reload({ waitUntil: 'networkidle' });
-    snapshots.push(
-      await page.locator(contract.selector).evaluateAll((elements) => {
-        const rects = elements
-          .map((item) => item.getBoundingClientRect())
-          .filter((rect) => rect.width > 0 && rect.height > 0);
-        return {
-          columns: new Set(rects.map((rect) => Math.round(rect.left))).size,
-          count: rects.length,
-        };
-      }),
-    );
+  try {
+    for (const viewport of contract.viewports) {
+      await page.setViewportSize({ height: 720, width: viewport.width });
+      await page.reload({ waitUntil: 'networkidle' });
+      snapshots.push(
+        await page.locator(contract.selector).evaluateAll((elements) => {
+          const rects = elements
+            .map((item) => item.getBoundingClientRect())
+            .filter((rect) => rect.width > 0 && rect.height > 0);
+          return {
+            columns: new Set(rects.map((rect) => Math.round(rect.left))).size,
+            count: rects.length,
+          };
+        }),
+      );
+    }
+  } finally {
+    if (originalViewport) {
+      await page.setViewportSize(originalViewport);
+    }
   }
 
   for (const [index, viewport] of contract.viewports.entries()) {

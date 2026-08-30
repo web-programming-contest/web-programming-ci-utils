@@ -20,13 +20,29 @@ export async function loadTaskBank() {
     readJson(path.join(taskDirectory, 'lab5.json')),
   ]);
 
-  const specs = {
-    1: new Map(lab1.map((task) => [task.id, task])),
-    2: new Map(lab2.map((task) => [task.id, task])),
-    3: new Map(lab3.map((task) => [task.id, task])),
-    4: new Map(lab4.map((task) => [task.id, task])),
-    5: new Map(lab5.map((task) => [task.id, task])),
-  };
+  if (!Number.isInteger(variants.variantCount) || variants.variantCount < 1) {
+    throw new Error('Task bank variantCount must be a positive integer.');
+  }
+
+  const taskLists = { 1: lab1, 2: lab2, 3: lab3, 4: lab4, 5: lab5 };
+  const specs = {};
+
+  for (const lab of [1, 2, 3, 4, 5]) {
+    if (!Array.isArray(taskLists[lab]) || taskLists[lab].length === 0) {
+      throw new Error(`Task list for lab${lab} must be a non-empty array.`);
+    }
+    const ids = new Set();
+    for (const task of taskLists[lab]) {
+      if (!task || !/^[a-z0-9-]+$/.test(task.id) || typeof task.title !== 'string') {
+        throw new Error(`Task list for lab${lab} contains an invalid task.`);
+      }
+      if (ids.has(task.id)) {
+        throw new Error(`Duplicate task id ${task.id} in lab${lab}.`);
+      }
+      ids.add(task.id);
+    }
+    specs[lab] = new Map(taskLists[lab].map((task) => [task.id, task]));
+  }
 
   for (const lab of [1, 2, 3, 4, 5]) {
     const mapping = variants.labs[String(lab)];

@@ -1,8 +1,9 @@
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { build } from 'esbuild';
 
 export async function prepareSite(submissionDirectory, outputDirectory) {
+  await rm(outputDirectory, { force: true, recursive: true });
   await mkdir(outputDirectory, { recursive: true });
   await cp(submissionDirectory, outputDirectory, {
     recursive: true,
@@ -15,8 +16,11 @@ export async function prepareSite(submissionDirectory, outputDirectory) {
   const typescriptEntry = path.join(submissionDirectory, 'main.ts');
   try {
     await readFile(typescriptEntry, 'utf8');
-  } catch {
-    return outputDirectory;
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      return outputDirectory;
+    }
+    throw error;
   }
 
   await build({

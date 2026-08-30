@@ -40,13 +40,16 @@ export async function checkBrowser({ lab, resultsDirectory, siteDirectory, varia
   page.setDefaultNavigationTimeout(15_000);
   const steps = [];
   let traceSaved = false;
+  let diagnostics;
 
   try {
     const baseUrl = await listen(server);
+    diagnostics = monitorPage(page, baseUrl);
     const pageUrl = new URL(contract.common.page, baseUrl).href;
     await runStep(steps, 'Page loads without browser errors', () =>
-      checkPageLoad(page, pageUrl, contract.common, baseUrl),
+      checkPageLoad(page, pageUrl, contract.common, diagnostics),
     );
+    diagnostics.reset();
     await runStep(steps, 'Layout fits the desktop viewport', () =>
       checkOverflow(page, pageUrl, contract.common),
     );
@@ -55,16 +58,23 @@ export async function checkBrowser({ lab, resultsDirectory, siteDirectory, varia
     for (const step of labSteps) {
       await runStep(steps, step.name, step.operation);
     }
+    await runStep(steps, 'Interactions finish without browser errors', () =>
+      diagnostics.assertClean(),
+    );
 
     const passed = steps.every((step) => step.status === 'passed');
     const result = { lab, passed, steps, variant };
-    traceSaved = await saveBrowserArtifacts({
+    const artifacts = await saveBrowserArtifacts({
       context,
       page,
       passed,
       resultsDirectory,
       result,
     });
+    traceSaved = artifacts.traceSaved;
+    for (const error of artifacts.errors) {
+      console.warn(`Could not save browser diagnostic: ${error}`);
+    }
     printSteps(steps);
     if (!passed) {
       throw new Error(
@@ -73,6 +83,7 @@ export async function checkBrowser({ lab, resultsDirectory, siteDirectory, varia
     }
     return result;
   } finally {
+    diagnostics?.dispose();
     if (!traceSaved) {
       await context.tracing.stop().catch(() => {});
     }
@@ -80,7 +91,18 @@ export async function checkBrowser({ lab, resultsDirectory, siteDirectory, varia
   }
 }
 
-async function checkPageLoad(page, pageUrl, common, baseUrl) {
+async function checkPageLoad(page, pageUrl, common, diagnostics) {
+  await page.goto(pageUrl, { waitUntil: 'networkidle' });
+  assert.ok(await page.locator('body').isVisible(), 'body must be visible');
+  assert.match(await page.title(), new RegExp(common.titlePattern), 'page title');
+  assert.ok(
+    await page.locator(common.meaningfulSelector).first().isVisible(),
+    'page must contain visible semantic or interactive UI',
+  );
+  diagnostics.assertClean();
+}
+
+function monitorPage(page, baseUrl) {
   const errors = [];
   const failedResources = [];
   const onConsole = (message) =>
@@ -94,21 +116,22 @@ async function checkPageLoad(page, pageUrl, common, baseUrl) {
   page.on('console', onConsole);
   page.on('pageerror', onPageError);
   page.on('response', onResponse);
-  try {
-    await page.goto(pageUrl, { waitUntil: 'networkidle' });
-    assert.ok(await page.locator('body').isVisible(), 'body must be visible');
-    assert.match(await page.title(), new RegExp(common.titlePattern), 'page title');
-    assert.ok(
-      await page.locator(common.meaningfulSelector).first().isVisible(),
-      'page must contain visible semantic or interactive UI',
-    );
-    assert.deepStrictEqual(failedResources, [], 'all local resources must load');
-    assert.deepStrictEqual(errors, [], 'browser console must not contain errors');
-  } finally {
-    page.off('console', onConsole);
-    page.off('pageerror', onPageError);
-    page.off('response', onResponse);
-  }
+
+  return {
+    assertClean() {
+      assert.deepStrictEqual(failedResources, [], 'all local resources must load');
+      assert.deepStrictEqual(errors, [], 'browser console must not contain errors');
+    },
+    dispose() {
+      page.off('console', onConsole);
+      page.off('pageerror', onPageError);
+      page.off('response', onResponse);
+    },
+    reset() {
+      errors.length = 0;
+      failedResources.length = 0;
+    },
+  };
 }
 
 async function checkOverflow(page, pageUrl, common) {

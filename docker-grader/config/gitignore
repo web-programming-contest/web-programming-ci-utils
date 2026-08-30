@@ -1,0 +1,13 @@
+node_modules/
+package-lock.json
+grader-results/
+playwright-report/
+test-results/
+*.log
+.env
+.env.*
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

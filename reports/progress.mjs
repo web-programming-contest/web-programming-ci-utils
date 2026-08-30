@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateRequiredFiles, validateVariant } from '../docker-grader/submission/contract.mjs';
@@ -92,10 +92,10 @@ export function formatMarkdown(report) {
       return value.accepted ? `✅ ${value.acceptedAt?.slice(0, 10) ?? ''}`.trim() : '—';
     });
     lines.push(
-      `| ${student.slug} | ${student.github ?? '—'} | ${student.variant ?? '—'} | ${labCells.join(' | ')} | ${student.acceptedCount}/5 |`,
+      `| ${escapeTableCell(student.slug)} | ${escapeTableCell(student.github ?? '—')} | ${student.variant ?? '—'} | ${labCells.join(' | ')} | ${student.acceptedCount}/5 |`,
     );
     if (student.errors.length > 0) {
-      lines.push(`| ⚠️ | ${student.errors.join('<br>')} | | | | | | | |`);
+      lines.push(`| ⚠️ | ${student.errors.map(escapeTableCell).join('<br>')} | | | | | | | |`);
     }
   }
   lines.push(
@@ -150,6 +150,10 @@ function csvCell(value) {
   return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
 }
 
+function escapeTableCell(value) {
+  return String(value).replaceAll('|', '\\|').replace(/\r?\n/g, '<br>');
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const root = path.resolve(args.root || process.cwd());
@@ -164,7 +168,26 @@ async function main() {
   }
 
   const report = await buildProgressReport({ root, repository, token: process.env.GITHUB_TOKEN });
+  if (args['output-dir']) {
+    if (args.output || args.format) {
+      throw new Error('--output-dir cannot be combined with --output or --format.');
+    }
+    const outputDirectory = path.resolve(args['output-dir']);
+    await mkdir(outputDirectory, { recursive: true });
+    await Promise.all([
+      writeFile(path.join(outputDirectory, 'progress.md'), formatMarkdown(report)),
+      writeFile(path.join(outputDirectory, 'progress.csv'), formatCsv(report)),
+      writeFile(
+        path.join(outputDirectory, 'progress.json'),
+        `${JSON.stringify(report, null, 2)}\n`,
+      ),
+    ]);
+    return;
+  }
   const format = args.format || 'markdown';
+  if (!['csv', 'json', 'markdown'].includes(format)) {
+    throw new Error('--format must be markdown, csv or json.');
+  }
   const output =
     format === 'json'
       ? `${JSON.stringify(report, null, 2)}\n`

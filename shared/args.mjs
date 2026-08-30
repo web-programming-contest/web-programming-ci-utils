@@ -10,11 +10,14 @@ export function parseArgs(argv) {
 
     const separator = token.indexOf('=');
     if (separator !== -1) {
-      result[token.slice(2, separator)] = token.slice(separator + 1);
+      const name = token.slice(2, separator);
+      rejectDuplicate(result, name);
+      result[name] = token.slice(separator + 1);
       continue;
     }
 
     const name = token.slice(2);
+    rejectDuplicate(result, name);
     const next = argv[index + 1];
     if (!next || next.startsWith('--')) {
       result[name] = true;
@@ -26,6 +29,12 @@ export function parseArgs(argv) {
   }
 
   return result;
+}
+
+function rejectDuplicate(result, name) {
+  if (Object.hasOwn(result, name)) {
+    throw new Error(`Duplicate argument: --${name}`);
+  }
 }
 
 export function requiredArg(args, name) {

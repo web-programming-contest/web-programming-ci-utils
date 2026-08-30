@@ -3,7 +3,6 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from '../shared/args.mjs';
-import { writeStepSummary } from './output.mjs';
 
 const reportOutputLimit = 12_000;
 
@@ -15,8 +14,31 @@ async function main() {
 
   await mkdir(directory, { recursive: true });
   await writeFile(path.join(directory, 'report.md'), `${markdown}\n`);
-  await writeStepSummary(markdown);
-  process.stdout.write(`${markdown}\n`);
+  emitFailureAnnotations(result);
+  process.stdout.write(`::group::Grader report\n${markdown}\n::endgroup::\n`);
+}
+
+function emitFailureAnnotations(result) {
+  const failures = (result.checks ?? []).filter((check) => check.status === 'failed');
+  for (const check of failures) {
+    const details = [check.error, check.stderr, check.stdout].filter(Boolean).join('\n\n');
+    const message = limitOutput(details || 'Проверка завершилась с ошибкой.').slice(-4_000);
+    const title = escapeWorkflowProperty(check.name || 'Course grader');
+    console.error(`::error title=${title}::${escapeWorkflowCommand(message)}`);
+  }
+  if (failures.length === 0 && result.error) {
+    console.error(
+      `::error title=Course grader::${escapeWorkflowCommand(limitOutput(result.error))}`,
+    );
+  }
+}
+
+function escapeWorkflowCommand(value) {
+  return String(value).replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+}
+
+function escapeWorkflowProperty(value) {
+  return escapeWorkflowCommand(value).replaceAll(':', '%3A').replaceAll(',', '%2C');
 }
 
 export async function readResult(directory) {
@@ -188,7 +210,16 @@ function checkSummary(check) {
   if (check.status === 'passed') {
     return 'Проверка завершилась успешно.';
   }
-  return check.error || `Exit code: ${check.exitCode ?? 'unknown'}`;
+  if (check.error && !check.error.startsWith('Процесс завершился с кодом')) {
+    return check.error;
+  }
+  const diagnostic = [check.stdout, check.stderr]
+    .filter(Boolean)
+    .flatMap((output) => String(output).split(/\r?\n/))
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .at(-1);
+  return diagnostic || check.error || `Exit code: ${check.exitCode ?? 'unknown'}`;
 }
 
 function formatDuration(milliseconds) {

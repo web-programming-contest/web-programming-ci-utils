@@ -8,6 +8,7 @@ import {
   uniquePaths,
   updateWorkflowRefs,
 } from './workflow-refs.mjs';
+import { syncStudentConfig } from './student-config.mjs';
 
 const utilsRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workspaceRoot = path.dirname(utilsRoot);
@@ -37,7 +38,10 @@ async function main() {
 
   for (const target of targets) {
     await updateWorkflowRefs(target, sha);
-    console.log(`Updated ${path.relative(process.cwd(), target) || '.'} -> ${sha}`);
+    const config = await syncStudentConfig(target);
+    console.log(
+      `Updated ${path.relative(process.cwd(), target) || '.'} -> ${sha}; synchronized ${config.updatedFiles.length} config file(s).`,
+    );
   }
 }
 

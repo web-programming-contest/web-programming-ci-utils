@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-    ignores: ['node_modules/**', '01_УМК/**', 'grader-results/**'],
+    ignores: ['node_modules/**', 'grader-results/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

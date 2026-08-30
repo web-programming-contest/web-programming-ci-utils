@@ -20,7 +20,7 @@ export async function checkFunctions({ lab, solutionFile, variant }) {
     assert.equal(
       typeof implementation,
       'function',
-      `Expected named ESM export: ${task.exportName}`,
+      `Expected named ESM export "${task.exportName}". Export it from solution.js/solution.ts, for example: export function ${task.exportName}(...) { ... }`,
     );
 
     const failures = [];

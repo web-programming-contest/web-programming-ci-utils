@@ -16,6 +16,10 @@ permissions:
   contents: read
   pull-requests: read
 
+concurrency:
+  group: progress-${{ github.repository }}
+  cancel-in-progress: true
+
 jobs:
   report:
     name: Generate report
@@ -59,10 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
-          mkdir -p "$RUNNER_TEMP/progress"
-          node trusted/reports/progress.mjs --root course --format markdown --output "$RUNNER_TEMP/progress/progress.md"
-          node trusted/reports/progress.mjs --root course --format csv --output "$RUNNER_TEMP/progress/progress.csv"
-          node trusted/reports/progress.mjs --root course --format json --output "$RUNNER_TEMP/progress/progress.json"
+          node trusted/reports/progress.mjs --root course --output-dir "$RUNNER_TEMP/progress"
           cat "$RUNNER_TEMP/progress/progress.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload progress report

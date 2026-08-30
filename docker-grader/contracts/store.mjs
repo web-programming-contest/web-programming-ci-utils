@@ -177,15 +177,15 @@ export async function loadBrowserContract(lab, variant) {
     const scenarios = await readJson(path.join(labDirectory, 'scenarios.json'));
     variantData = scenarios.find((candidate) => candidate.taskId === task.id);
     validateLab5Contract(task.id, variantData);
-  } else {
-    try {
-      const filename = lab === 1 ? `${task.id}.json` : `variant-${variant}.json`;
-      variantData = await readJson(path.join(labDirectory, filename));
-    } catch (error) {
-      if (error.code !== 'ENOENT') {
-        throw error;
+  } else if (lab === 1) {
+    variantData = await readJson(path.join(labDirectory, `${task.id}.json`)).catch((error) => {
+      if (error.code === 'ENOENT') {
+        throw new Error(`Browser contract is missing for lab1 task ${task.id}.`, {
+          cause: error,
+        });
       }
-    }
+      throw error;
+    });
   }
 
   if (variantData && variantData.taskId !== task.id) {

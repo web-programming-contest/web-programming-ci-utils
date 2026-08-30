@@ -6,6 +6,7 @@ import { validateRequiredFiles, validateVariant } from '../docker-grader/submiss
 import { loadTaskBank, resolveTask } from '../docker-grader/tasks/store.mjs';
 import { annotateError, writeGithubOutput, writeStepSummary } from '../reports/output.mjs';
 import { parseArgs, requiredArg } from '../shared/args.mjs';
+import { assertStudentConfig } from '../scripts/student-config.mjs';
 import { validateChangedPaths, validateTreeEntries } from './changed-files.mjs';
 import { listTreeEntries, readEvent } from './git.mjs';
 import { listPullRequestFiles } from './github.mjs';
@@ -18,6 +19,8 @@ export async function runGate(options) {
   if (!pullRequest) {
     throw new Error('The event payload does not contain pull_request.');
   }
+
+  await assertStudentConfig(options.baseRoot);
 
   const { lab, slug, variant: titleVariant } = parsePrTitle(pullRequest.title);
   const files =

@@ -14,9 +14,11 @@
     "refs:update:courses": "node scripts/update-course-refs.mjs",
     "refs:update:test": "node scripts/update-ci-test-ref.mjs",
     "setup:browser": "playwright install chromium",
+    "template:sync": "node scripts/sync-template.mjs",
+    "contracts:check": "node scripts/validate-contracts.mjs",
     "lint": "eslint . --max-warnings 0",
     "format:check": "prettier --check .",
-    "validate": "npm run format:check && npm run lint"
+    "validate": "npm run format:check && npm run lint && npm run contracts:check"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

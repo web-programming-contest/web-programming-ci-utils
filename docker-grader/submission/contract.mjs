@@ -1,12 +1,7 @@
 import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
-const README_HEADINGS = [
-  /^# Лабораторная работа [1-5]\s*$/m,
-  /^## Задание\s*$/m,
-  /^## Реализация\s*$/m,
-  /^## Запуск\s*$/m,
-];
+const README_SECTIONS = ['Задание', 'Реализация', 'Запуск'];
 
 export function validateVariant(variant, variantCount) {
   if (!Number.isInteger(variant) || variant < 1 || variant > variantCount) {
@@ -17,22 +12,29 @@ export function validateVariant(variant, variantCount) {
 }
 
 export function validateReadme(contents, lab) {
-  const expectedTitle = new RegExp(`^# Лабораторная работа ${lab}\\s*$`, 'm');
-  if (!expectedTitle.test(contents)) {
+  const normalized = contents.replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  const lines = normalized.split('\n');
+  if (lines[0]?.trimEnd() !== `# Лабораторная работа ${lab}`) {
     throw new Error(`README.md must start with "# Лабораторная работа ${lab}".`);
   }
 
-  for (const heading of README_HEADINGS.slice(1)) {
-    if (!heading.test(contents)) {
-      throw new Error(`README.md is missing a required heading matching ${heading}.`);
+  let previousHeadingIndex = 0;
+  for (const section of README_SECTIONS) {
+    const marker = `## ${section}`;
+    const indexes = lines.flatMap((line, index) => (line.trimEnd() === marker ? [index] : []));
+    if (indexes.length !== 1) {
+      throw new Error(`README.md must contain exactly one "${marker}" heading.`);
     }
+    if (indexes[0] <= previousHeadingIndex) {
+      throw new Error('README.md sections must be ordered: Задание, Реализация, Запуск.');
+    }
+    previousHeadingIndex = indexes[0];
   }
 
-  const sections = ['Задание', 'Реализация', 'Запуск'];
-  for (const section of sections) {
+  for (const section of README_SECTIONS) {
     const marker = `## ${section}`;
-    const start = contents.indexOf(marker) + marker.length;
-    const remaining = contents.slice(start);
+    const start = normalized.indexOf(marker) + marker.length;
+    const remaining = normalized.slice(start);
     const nextHeading = remaining.search(/\n## /);
     const sectionBody = nextHeading === -1 ? remaining : remaining.slice(0, nextHeading);
     const body = sectionBody

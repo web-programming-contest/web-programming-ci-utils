@@ -16,12 +16,10 @@ export class CheckSuite {
       maxBuffer: 10 * 1024 * 1024,
       timeout: options.timeout ?? 120_000,
     });
-    if (result.stdout) {
-      process.stdout.write(result.stdout);
-    }
-    if (result.stderr) {
-      process.stderr.write(result.stderr);
-    }
+    // GitHub merges stdout/stderr asynchronously. Writing both captured streams to
+    // one stream keeps diagnostics under the check that produced them.
+    process.stdout.write(result.stdout ?? '');
+    process.stdout.write(result.stderr ?? '');
 
     const passed = result.status === 0 && !result.error;
     const check = {

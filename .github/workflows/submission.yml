@@ -151,7 +151,9 @@ jobs:
 
       - name: Render check summary
         if: always()
-        run: node trusted/reports/github-summary.mjs --results "$RUNNER_TEMP/grader-results"
+        run: |
+          node trusted/reports/github-summary.mjs --results "$RUNNER_TEMP/grader-results"
+          cat "$RUNNER_TEMP/grader-results/report.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload diagnostic reports
         if: always()
