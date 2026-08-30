@@ -11,6 +11,8 @@
     "gate": "node pr-gate/index.mjs",
     "grade": "node docker-grader/index.mjs",
     "report": "node reports/progress.mjs",
+    "refs:update:courses": "node scripts/update-course-refs.mjs",
+    "refs:update:test": "node scripts/update-ci-test-ref.mjs",
     "setup:browser": "playwright install chromium",
     "lint": "eslint . --max-warnings 0",
     "format:check": "prettier --check .",

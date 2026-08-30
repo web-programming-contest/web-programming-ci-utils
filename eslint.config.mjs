@@ -36,6 +36,7 @@ export default tseslint.config(
       'docker-grader/**/*.{js,mjs,ts}',
       'pr-gate/**/*.{js,mjs,ts}',
       'reports/**/*.{js,mjs,ts}',
+      'scripts/**/*.{js,mjs,ts}',
       'shared/**/*.{js,mjs,ts}',
     ],
     rules: {
