@@ -100,10 +100,38 @@ export function formatMarkdown(report) {
   }
   lines.push(
     '',
-    `Всего: ${report.totals.students} студентов, ${report.totals.acceptedLabs} принятых работ.`,
+    `Всего: ${formatStudentCount(report.totals.students)}, ${formatAcceptedLabCount(report.totals.acceptedLabs)}.`,
     '',
   );
   return lines.join('\n');
+}
+
+function formatStudentCount(count) {
+  return `${count} ${selectRussianPlural(count, 'студент', 'студента', 'студентов')}`;
+}
+
+function formatAcceptedLabCount(count) {
+  return `${count} ${selectRussianPlural(
+    count,
+    'принятая работа',
+    'принятые работы',
+    'принятых работ',
+  )}`;
+}
+
+function selectRussianPlural(count, singular, paucal, plural) {
+  const modulo100 = Math.abs(count) % 100;
+  const modulo10 = modulo100 % 10;
+  if (modulo100 >= 11 && modulo100 <= 14) {
+    return plural;
+  }
+  if (modulo10 === 1) {
+    return singular;
+  }
+  if (modulo10 >= 2 && modulo10 <= 4) {
+    return paucal;
+  }
+  return plural;
 }
 
 export function formatCsv(report) {

@@ -49,6 +49,11 @@ export function validateReadme(contents, lab) {
 }
 
 export async function validateRequiredFiles(submissionDirectory, lab) {
+  const directoryStats = await lstat(submissionDirectory);
+  if (!directoryStats.isDirectory() || directoryStats.isSymbolicLink()) {
+    throw new Error(`lab${lab} path must be a regular directory.`);
+  }
+
   const required = ['README.md'];
   if (await pathExists(path.join(submissionDirectory, 'submission.json'))) {
     throw new Error(
