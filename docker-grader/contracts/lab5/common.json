@@ -2,5 +2,9 @@
   "page": "/index.html",
   "titlePattern": "\\S",
   "meaningfulSelector": "main, nav, form, article, section, button, input, textarea, select, canvas, [role]",
-  "overflowTolerance": 2
+  "overflowTolerance": 2,
+  "application": {
+    "rootSelector": "[data-testid=\"app\"]",
+    "interactionTimeoutMs": 5000
+  }
 }

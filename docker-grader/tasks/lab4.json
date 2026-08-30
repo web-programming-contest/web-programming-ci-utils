@@ -1,0 +1,317 @@
+[
+  {
+    "id": "library",
+    "title": "Библиотеки и книги",
+    "classExport": "Library",
+    "functionExports": [
+      "groupBooksByGenre",
+      "getUniqueAuthors",
+      "groupBooksByYear",
+      "getUniqueYears",
+      "findBooksByAuthor"
+    ],
+    "ui": { "fields": { "name": "CI Library 94001" }, "uniqueText": "CI Library 94001" }
+  },
+  {
+    "id": "student",
+    "title": "Студенты и оценки",
+    "classExport": "Student",
+    "functionExports": [
+      "groupStudentsByAverageGrade",
+      "getUniqueSubjects",
+      "groupStudentsBySubject",
+      "getTopStudents",
+      "findStudentsBySubject"
+    ],
+    "ui": {
+      "fields": { "id": "94002", "name": "CI Student 94002" },
+      "uniqueText": "CI Student 94002"
+    }
+  },
+  {
+    "id": "movie",
+    "title": "Фильмы и актёры",
+    "classExport": "Movie",
+    "functionExports": [
+      "groupMoviesByDirector",
+      "getUniqueActors",
+      "groupMoviesByCastSize",
+      "findMoviesByActor",
+      "getMovieTitles"
+    ],
+    "ui": {
+      "fields": { "title": "CI Movie 94003", "director": "CI Director" },
+      "uniqueText": "CI Movie 94003"
+    }
+  },
+  {
+    "id": "order",
+    "title": "Заказы и товары",
+    "classExport": "Order",
+    "functionExports": [
+      "groupOrdersByStatus",
+      "getUniqueItems",
+      "groupOrdersByTotal",
+      "findOrdersByItem",
+      "findOrdersByStatus"
+    ],
+    "ui": {
+      "fields": { "orderId": "94004", "status": "new" },
+      "uniqueText": "94004"
+    }
+  },
+  {
+    "id": "team",
+    "title": "Команды и участники",
+    "classExport": "Team",
+    "functionExports": [
+      "groupMembersByRole",
+      "getUniqueRoles",
+      "groupTeamsByMemberCount",
+      "findTeamsByMember",
+      "getUniqueMembers"
+    ],
+    "ui": { "fields": { "name": "CI Team 94005" }, "uniqueText": "CI Team 94005" }
+  },
+  {
+    "id": "recipe",
+    "title": "Рецепты и ингредиенты",
+    "classExport": "Recipe",
+    "functionExports": [
+      "groupRecipesByIngredientCount",
+      "getUniqueIngredients",
+      "findRecipesByIngredient",
+      "groupRecipesByStepCount",
+      "getRecipeTitles"
+    ],
+    "ui": { "fields": { "title": "CI Recipe 94006" }, "uniqueText": "CI Recipe 94006" }
+  },
+  {
+    "id": "participant-event",
+    "title": "Мероприятия и участники",
+    "classExport": "Event",
+    "functionExports": [
+      "groupEventsByDate",
+      "getUniqueParticipants",
+      "groupEventsByParticipantCount",
+      "findEventsByParticipant",
+      "findEventsByMonth"
+    ],
+    "ui": {
+      "fields": { "id": "94007", "title": "CI Event 94007", "date": "2030-07-14" },
+      "uniqueText": "CI Event 94007"
+    }
+  },
+  {
+    "id": "category-product",
+    "title": "Товары и категории",
+    "classExport": "Product",
+    "functionExports": [
+      "groupProductsByCategory",
+      "getUniqueCategories",
+      "groupProductsByPriceRange",
+      "findProductsByCategory",
+      "findProductsAbovePrice"
+    ],
+    "ui": {
+      "fields": { "id": "94008", "name": "CI Product 94008", "price": "940.08" },
+      "uniqueText": "CI Product 94008"
+    }
+  },
+  {
+    "id": "car",
+    "title": "Автомобили и владельцы",
+    "classExport": "Car",
+    "functionExports": [
+      "groupCarsByMake",
+      "getUniqueOwners",
+      "groupCarsByOwnerCount",
+      "findCarsByOwner",
+      "findModelsByMake"
+    ],
+    "ui": {
+      "fields": { "make": "CI Make 94009", "model": "CI Model" },
+      "uniqueText": "CI Make 94009"
+    }
+  },
+  {
+    "id": "blog-post",
+    "title": "Блог-посты, теги и комментарии",
+    "classExport": "BlogPost",
+    "functionExports": [
+      "groupPostsByTag",
+      "getUniqueTags",
+      "groupPostsByCommentCount",
+      "findPostsByTag",
+      "getCommentAuthors"
+    ],
+    "ui": {
+      "fields": { "id": "94010", "title": "CI Post 94010" },
+      "uniqueText": "CI Post 94010"
+    }
+  },
+  {
+    "id": "user",
+    "title": "Пользователи и друзья",
+    "classExport": "User",
+    "functionExports": [
+      "groupUsersByFriendCount",
+      "getUniqueFriends",
+      "findUsersWithFriend",
+      "findUsersAboveFriendCount",
+      "findUsersWithoutFriends"
+    ],
+    "ui": {
+      "fields": { "id": "94011", "name": "CI User 94011" },
+      "uniqueText": "CI User 94011"
+    }
+  },
+  {
+    "id": "clothing-item",
+    "title": "Одежда, размеры и цвета",
+    "classExport": "ClothingItem",
+    "functionExports": [
+      "groupItemsBySize",
+      "getUniqueColors",
+      "findItemsByColor",
+      "groupItemsByColorCount",
+      "findItemsAboveColorCount"
+    ],
+    "ui": {
+      "fields": { "id": "94012", "name": "CI Clothing 94012", "size": "M" },
+      "uniqueText": "CI Clothing 94012"
+    }
+  },
+  {
+    "id": "game",
+    "title": "Игры и платформы",
+    "classExport": "Game",
+    "functionExports": [
+      "groupGamesByReleaseYear",
+      "getUniquePlatforms",
+      "findGamesByPlatform",
+      "groupGamesByPlatformCount",
+      "findGamesReleasedAfter"
+    ],
+    "ui": {
+      "fields": { "title": "CI Game 94013", "releaseYear": "2030" },
+      "uniqueText": "CI Game 94013"
+    }
+  },
+  {
+    "id": "course",
+    "title": "Курсы и студенты",
+    "classExport": "Course",
+    "functionExports": [
+      "groupCoursesByStudentCount",
+      "getUniqueStudents",
+      "findCoursesByStudent",
+      "groupStudentsByCourse",
+      "findLargestCourses"
+    ],
+    "ui": {
+      "fields": { "courseId": "94014", "title": "CI Course 94014" },
+      "uniqueText": "CI Course 94014"
+    }
+  },
+  {
+    "id": "travel",
+    "title": "Путешествия и страны",
+    "classExport": "Travel",
+    "functionExports": [
+      "groupTravelsByCountryCount",
+      "getUniqueCountries",
+      "findTravelsByCountry",
+      "groupTravelersByCountry",
+      "findTravelsAboveCountryCount"
+    ],
+    "ui": {
+      "fields": { "id": "94015", "travelerName": "CI Traveler 94015" },
+      "uniqueText": "CI Traveler 94015"
+    }
+  },
+  {
+    "id": "restaurant",
+    "title": "Рестораны и меню",
+    "classExport": "Restaurant",
+    "functionExports": [
+      "groupRestaurantsByMenuSize",
+      "getUniqueDishes",
+      "findRestaurantsByDish",
+      "groupDishesByPriceRange",
+      "findRestaurantsWithMostExpensiveDish"
+    ],
+    "ui": {
+      "fields": { "name": "CI Restaurant 94016" },
+      "uniqueText": "CI Restaurant 94016"
+    }
+  },
+  {
+    "id": "programmer",
+    "title": "Программисты и языки",
+    "classExport": "Programmer",
+    "functionExports": [
+      "groupProgrammersByLanguage",
+      "getUniqueLanguages",
+      "findProgrammersByLanguage",
+      "groupProgrammersByLanguageCount",
+      "findTopPolyglots"
+    ],
+    "ui": {
+      "fields": { "id": "94017", "name": "CI Programmer 94017" },
+      "uniqueText": "CI Programmer 94017"
+    }
+  },
+  {
+    "id": "organizer-event",
+    "title": "События и организаторы",
+    "classExport": "Event",
+    "functionExports": [
+      "groupEventsByLocation",
+      "getUniqueOrganizers",
+      "findEventsByOrganizer",
+      "groupEventsByOrganizerCount",
+      "findEventsByCity"
+    ],
+    "ui": {
+      "fields": {
+        "id": "94018",
+        "title": "CI Organizer Event 94018",
+        "location": "CI City"
+      },
+      "uniqueText": "CI Organizer Event 94018"
+    }
+  },
+  {
+    "id": "supplier-product",
+    "title": "Товары и поставщики",
+    "classExport": "Product",
+    "functionExports": [
+      "groupProductsBySupplier",
+      "getUniqueSuppliers",
+      "findProductsBySupplier",
+      "groupProductsBySupplierCount",
+      "findProductsWithMostSuppliers"
+    ],
+    "ui": {
+      "fields": { "id": "94019", "name": "CI Supplier Product 94019" },
+      "uniqueText": "CI Supplier Product 94019"
+    }
+  },
+  {
+    "id": "channel",
+    "title": "Каналы и подписчики",
+    "classExport": "Channel",
+    "functionExports": [
+      "groupChannelsBySubscriberCount",
+      "getUniqueSubscribers",
+      "findChannelsBySubscriber",
+      "groupSubscribersByChannel",
+      "findLargestChannels"
+    ],
+    "ui": {
+      "fields": { "id": "94020", "name": "CI Channel 94020" },
+      "uniqueText": "CI Channel 94020"
+    }
+  }
+]

@@ -1,0 +1,202 @@
+[
+  {
+    "taskId": "library",
+    "checks": [
+      { "exportName": "groupBooksByGenre", "args": [], "contains": "SF" },
+      { "exportName": "getUniqueAuthors", "args": [], "contains": "Frank Herbert" },
+      { "exportName": "groupBooksByYear", "args": [], "contains": 1965 },
+      { "exportName": "getUniqueYears", "args": [], "contains": 1965 },
+      { "exportName": "findBooksByAuthor", "args": ["Frank Herbert"], "contains": "Dune" }
+    ]
+  },
+  {
+    "taskId": "student",
+    "checks": [
+      { "exportName": "groupStudentsByAverageGrade", "args": [], "contains": 4 },
+      { "exportName": "getUniqueSubjects", "args": [], "contains": "Math" },
+      { "exportName": "groupStudentsBySubject", "args": [], "contains": "Math" },
+      { "exportName": "getTopStudents", "args": [], "contains": "Anna" },
+      { "exportName": "findStudentsBySubject", "args": ["Math"], "contains": "Anna" }
+    ]
+  },
+  {
+    "taskId": "movie",
+    "checks": [
+      { "exportName": "groupMoviesByDirector", "args": [], "contains": "Denis Villeneuve" },
+      { "exportName": "getUniqueActors", "args": [], "contains": "Amy Adams" },
+      { "exportName": "groupMoviesByCastSize", "args": [], "contains": 1 },
+      { "exportName": "findMoviesByActor", "args": ["Amy Adams"], "contains": "Arrival" },
+      { "exportName": "getMovieTitles", "args": [], "contains": "Arrival" }
+    ]
+  },
+  {
+    "taskId": "order",
+    "checks": [
+      { "exportName": "groupOrdersByStatus", "args": [], "contains": "new" },
+      { "exportName": "getUniqueItems", "args": [], "contains": "Keyboard" },
+      { "exportName": "groupOrdersByTotal", "args": [], "contains": 1200 },
+      { "exportName": "findOrdersByItem", "args": ["Keyboard"], "contains": 101 },
+      { "exportName": "findOrdersByStatus", "args": ["new"], "contains": 101 }
+    ]
+  },
+  {
+    "taskId": "team",
+    "checks": [
+      { "exportName": "groupMembersByRole", "args": [], "contains": "developer" },
+      { "exportName": "getUniqueRoles", "args": [], "contains": "developer" },
+      { "exportName": "groupTeamsByMemberCount", "args": [], "contains": 1 },
+      { "exportName": "findTeamsByMember", "args": ["Alex"], "contains": "Core" },
+      { "exportName": "getUniqueMembers", "args": [], "contains": "Alex" }
+    ]
+  },
+  {
+    "taskId": "recipe",
+    "checks": [
+      { "exportName": "groupRecipesByIngredientCount", "args": [], "contains": 1 },
+      { "exportName": "getUniqueIngredients", "args": [], "contains": "Water" },
+      { "exportName": "findRecipesByIngredient", "args": ["Water"], "contains": "Soup" },
+      { "exportName": "groupRecipesByStepCount", "args": [], "contains": 1 },
+      { "exportName": "getRecipeTitles", "args": [], "contains": "Soup" }
+    ]
+  },
+  {
+    "taskId": "participant-event",
+    "checks": [
+      { "exportName": "groupEventsByDate", "args": [], "contains": "2030-07-14" },
+      { "exportName": "getUniqueParticipants", "args": [], "contains": "Mia" },
+      { "exportName": "groupEventsByParticipantCount", "args": [], "contains": 1 },
+      { "exportName": "findEventsByParticipant", "args": ["Mia"], "contains": "Meetup" },
+      { "exportName": "findEventsByMonth", "args": [7], "contains": "Meetup" }
+    ]
+  },
+  {
+    "taskId": "category-product",
+    "checks": [
+      { "exportName": "groupProductsByCategory", "args": [], "contains": "electronics" },
+      { "exportName": "getUniqueCategories", "args": [], "contains": "electronics" },
+      { "exportName": "groupProductsByPriceRange", "args": [], "contains": 30000 },
+      { "exportName": "findProductsByCategory", "args": ["electronics"], "contains": "Monitor" },
+      { "exportName": "findProductsAbovePrice", "args": [10000], "contains": "Monitor" }
+    ]
+  },
+  {
+    "taskId": "car",
+    "checks": [
+      { "exportName": "groupCarsByMake", "args": [], "contains": "Volvo" },
+      { "exportName": "getUniqueOwners", "args": [], "contains": "Nora" },
+      { "exportName": "groupCarsByOwnerCount", "args": [], "contains": 1 },
+      { "exportName": "findCarsByOwner", "args": ["Nora"], "contains": "XC40" },
+      { "exportName": "findModelsByMake", "args": ["Volvo"], "contains": "XC40" }
+    ]
+  },
+  {
+    "taskId": "blog-post",
+    "checks": [
+      { "exportName": "groupPostsByTag", "args": [], "contains": "javascript" },
+      { "exportName": "getUniqueTags", "args": [], "contains": "javascript" },
+      { "exportName": "groupPostsByCommentCount", "args": [], "contains": 1 },
+      { "exportName": "findPostsByTag", "args": ["javascript"], "contains": "ES modules" },
+      { "exportName": "getCommentAuthors", "args": [], "contains": "Max" }
+    ]
+  },
+  {
+    "taskId": "user",
+    "checks": [
+      { "exportName": "groupUsersByFriendCount", "args": [], "contains": 1 },
+      { "exportName": "getUniqueFriends", "args": [], "contains": 12 },
+      { "exportName": "findUsersWithFriend", "args": [12], "contains": "Lee" },
+      { "exportName": "findUsersAboveFriendCount", "args": [0], "contains": "Lee" },
+      { "exportName": "findUsersWithoutFriends", "args": [], "empty": true }
+    ]
+  },
+  {
+    "taskId": "clothing-item",
+    "checks": [
+      { "exportName": "groupItemsBySize", "args": [], "contains": "M" },
+      { "exportName": "getUniqueColors", "args": [], "contains": "blue" },
+      { "exportName": "findItemsByColor", "args": ["blue"], "contains": "T-shirt" },
+      { "exportName": "groupItemsByColorCount", "args": [], "contains": 1 },
+      { "exportName": "findItemsAboveColorCount", "args": [0], "contains": "T-shirt" }
+    ]
+  },
+  {
+    "taskId": "game",
+    "checks": [
+      { "exportName": "groupGamesByReleaseYear", "args": [], "contains": 2007 },
+      { "exportName": "getUniquePlatforms", "args": [], "contains": "PC" },
+      { "exportName": "findGamesByPlatform", "args": ["PC"], "contains": "Portal" },
+      { "exportName": "groupGamesByPlatformCount", "args": [], "contains": 1 },
+      { "exportName": "findGamesReleasedAfter", "args": [2000], "contains": "Portal" }
+    ]
+  },
+  {
+    "taskId": "course",
+    "checks": [
+      { "exportName": "groupCoursesByStudentCount", "args": [], "contains": 1 },
+      { "exportName": "getUniqueStudents", "args": [], "contains": "Eva" },
+      { "exportName": "findCoursesByStudent", "args": [1], "contains": "Web" },
+      { "exportName": "groupStudentsByCourse", "args": [], "contains": "Eva" },
+      { "exportName": "findLargestCourses", "args": [], "contains": "Web" }
+    ]
+  },
+  {
+    "taskId": "travel",
+    "checks": [
+      { "exportName": "groupTravelsByCountryCount", "args": [], "contains": 1 },
+      { "exportName": "getUniqueCountries", "args": [], "contains": "Japan" },
+      { "exportName": "findTravelsByCountry", "args": ["Japan"], "contains": "Sam" },
+      { "exportName": "groupTravelersByCountry", "args": [], "contains": "Japan" },
+      { "exportName": "findTravelsAboveCountryCount", "args": [0], "contains": "Sam" }
+    ]
+  },
+  {
+    "taskId": "restaurant",
+    "checks": [
+      { "exportName": "groupRestaurantsByMenuSize", "args": [], "contains": 1 },
+      { "exportName": "getUniqueDishes", "args": [], "contains": "Pasta" },
+      { "exportName": "findRestaurantsByDish", "args": ["Pasta"], "contains": "Bistro" },
+      { "exportName": "groupDishesByPriceRange", "args": [], "contains": 700 },
+      { "exportName": "findRestaurantsWithMostExpensiveDish", "args": [], "contains": "Bistro" }
+    ]
+  },
+  {
+    "taskId": "programmer",
+    "checks": [
+      { "exportName": "groupProgrammersByLanguage", "args": [], "contains": "JavaScript" },
+      { "exportName": "getUniqueLanguages", "args": [], "contains": "JavaScript" },
+      { "exportName": "findProgrammersByLanguage", "args": ["JavaScript"], "contains": "Kim" },
+      { "exportName": "groupProgrammersByLanguageCount", "args": [], "contains": 1 },
+      { "exportName": "findTopPolyglots", "args": [], "contains": "Kim" }
+    ]
+  },
+  {
+    "taskId": "organizer-event",
+    "checks": [
+      { "exportName": "groupEventsByLocation", "args": [], "contains": "Moscow" },
+      { "exportName": "getUniqueOrganizers", "args": [], "contains": "Ira" },
+      { "exportName": "findEventsByOrganizer", "args": ["Ira"], "contains": "Conference" },
+      { "exportName": "groupEventsByOrganizerCount", "args": [], "contains": 1 },
+      { "exportName": "findEventsByCity", "args": ["Moscow"], "contains": "Conference" }
+    ]
+  },
+  {
+    "taskId": "supplier-product",
+    "checks": [
+      { "exportName": "groupProductsBySupplier", "args": [], "contains": "Acme" },
+      { "exportName": "getUniqueSuppliers", "args": [], "contains": "Acme" },
+      { "exportName": "findProductsBySupplier", "args": ["Acme"], "contains": "Coffee" },
+      { "exportName": "groupProductsBySupplierCount", "args": [], "contains": 1 },
+      { "exportName": "findProductsWithMostSuppliers", "args": [], "contains": "Coffee" }
+    ]
+  },
+  {
+    "taskId": "channel",
+    "checks": [
+      { "exportName": "groupChannelsBySubscriberCount", "args": [], "contains": 1 },
+      { "exportName": "getUniqueSubscribers", "args": [], "contains": "Zoe" },
+      { "exportName": "findChannelsBySubscriber", "args": ["Zoe"], "contains": "News" },
+      { "exportName": "groupSubscribersByChannel", "args": [], "contains": "Zoe" },
+      { "exportName": "findLargestChannels", "args": [], "contains": "News" }
+    ]
+  }
+]

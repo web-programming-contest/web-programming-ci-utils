@@ -8,13 +8,13 @@ import { saveBrowserArtifacts } from '../../../reports/browser-artifacts.mjs';
 import { parseArgs, requiredArg } from '../../../shared/args.mjs';
 import { loadBrowserContract } from '../../contracts/store.mjs';
 import { createStaticServer } from '../../runtime/static-server.mjs';
-import { checkElement, checkInteraction } from './assertions.mjs';
 import { installDomHelpers } from './dom-helpers.mjs';
-import { checkRule } from './rules/index.mjs';
+import { getLabSuite } from './labs/index.mjs';
 
 export async function checkBrowser({ lab, resultsDirectory, siteDirectory, variant }) {
   await mkdir(resultsDirectory, { recursive: true });
   const contract = await loadBrowserContract(lab, variant);
+  const labSuite = getLabSuite(lab);
   const server = createStaticServer(siteDirectory);
   console.log('Starting Chromium...');
   const launchOptions = {
@@ -31,6 +31,9 @@ export async function checkBrowser({ lab, resultsDirectory, siteDirectory, varia
     viewport: { height: 720, width: 1280 },
   });
   await context.addInitScript(installDomHelpers);
+  if (labSuite.initScript) {
+    await context.addInitScript(labSuite.initScript);
+  }
   await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
   const page = await context.newPage();
   page.setDefaultTimeout(10_000);
@@ -48,17 +51,9 @@ export async function checkBrowser({ lab, resultsDirectory, siteDirectory, varia
       checkOverflow(page, pageUrl, contract.common),
     );
 
-    if (contract.variant) {
-      await page.goto(pageUrl, { waitUntil: 'networkidle' });
-      for (const element of contract.variant.elements ?? []) {
-        await runStep(steps, element.name, () => checkElement(page, element));
-      }
-      for (const interaction of contract.variant.interactions ?? []) {
-        await runStep(steps, interaction.name, () => checkInteraction(page, interaction));
-      }
-      for (const rule of contract.variant.checks ?? []) {
-        await runStep(steps, rule.name, () => checkRule(page, rule));
-      }
+    const labSteps = await labSuite.createSteps({ contract, page, pageUrl });
+    for (const step of labSteps) {
+      await runStep(steps, step.name, step.operation);
     }
 
     const passed = steps.every((step) => step.status === 'passed');

@@ -42,9 +42,28 @@ export async function gradeSubmission({ submissionDirectory, lab, resultsDirecto
       ],
       { cwd: root },
     );
-    suite.skip('Browser validation', 'Для lab2/lab3 используются функциональные проверки.');
   } else {
-    suite.skip('Functional validation', 'Для lab1/lab4/lab5 используются браузерные проверки.');
+    suite.skip(
+      'Functional validation',
+      'Проверка функций solution применяется только к lab2/lab3.',
+    );
+  }
+
+  if (lab === 4) {
+    const modelFile = (await exists(path.join(submissionDirectory, 'model.ts')))
+      ? 'model.ts'
+      : 'model.js';
+    suite.run(
+      'Model validation',
+      path.join(root, 'docker-grader/checks/model/run.mjs'),
+      ['--variant', String(variant), '--model', path.join(submissionDirectory, modelFile)],
+      { cwd: root },
+    );
+  } else {
+    suite.skip('Model validation', 'Проверка модели применяется только к lab4.');
+  }
+
+  if ([1, 4, 5].includes(lab)) {
     try {
       const siteDirectory = await prepareSite(
         submissionDirectory,
@@ -70,6 +89,8 @@ export async function gradeSubmission({ submissionDirectory, lab, resultsDirecto
     } catch (error) {
       suite.fail('Browser validation', error);
     }
+  } else {
+    suite.skip('Browser validation', 'Для lab2/lab3 используются функциональные проверки.');
   }
 
   const result = {

@@ -1,0 +1,412 @@
+[
+  {
+    "taskId": "library",
+    "classExport": "Library",
+    "constructorArgs": ["Central Library", []],
+    "expect": [
+      { "path": "name", "value": "Central Library" },
+      { "path": "books", "value": [] },
+      { "path": "booksCount", "value": 0 }
+    ],
+    "actions": [
+      {
+        "method": "addBook",
+        "args": [{ "title": "Dune", "author": "Frank Herbert", "year": 1965, "genre": "SF" }],
+        "expect": [{ "path": "booksCount", "value": 1 }]
+      },
+      {
+        "method": "removeBook",
+        "args": ["Dune"],
+        "expect": [
+          { "path": "books", "value": [] },
+          { "path": "booksCount", "value": 0 }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "student",
+    "classExport": "Student",
+    "constructorArgs": [17, "Anna", {}],
+    "expect": [
+      { "path": "id", "value": 17 },
+      { "path": "name", "value": "Anna" },
+      { "path": "grades", "value": {} }
+    ],
+    "actions": [
+      {
+        "method": "addGrade",
+        "args": ["Math", 5],
+        "expect": [
+          { "path": "grades", "value": { "Math": 5 } },
+          { "path": "getAverageGrade", "call": true, "value": 5 },
+          {
+            "path": "summary",
+            "value": "Студент Anna (id: 17) — средний балл: 5"
+          }
+        ]
+      },
+      {
+        "method": "addGrade",
+        "args": ["Math", 4],
+        "expect": [
+          { "path": "grades", "value": { "Math": 4 } },
+          { "path": "getAverageGrade", "call": true, "value": 4 }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "movie",
+    "classExport": "Movie",
+    "constructorArgs": ["Arrival", "Denis Villeneuve", []],
+    "expect": [{ "path": "castSize", "value": 0 }],
+    "actions": [
+      {
+        "method": "addActor",
+        "args": ["Amy Adams"],
+        "expect": [
+          { "path": "actors", "value": ["Amy Adams"] },
+          { "path": "castSize", "value": 1 }
+        ]
+      },
+      {
+        "method": "removeActor",
+        "args": ["Amy Adams"],
+        "expect": [{ "path": "actors", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "order",
+    "classExport": "Order",
+    "constructorArgs": [101, [], "new"],
+    "expect": [
+      { "path": "orderId", "value": 101 },
+      { "path": "getTotal", "call": true, "value": 0 }
+    ],
+    "actions": [
+      {
+        "method": "addItem",
+        "args": [{ "name": "Keyboard", "price": 1200 }],
+        "expect": [{ "path": "getTotal", "call": true, "value": 1200 }]
+      },
+      {
+        "method": "removeItem",
+        "args": ["Keyboard"],
+        "expect": [
+          { "path": "items", "value": [] },
+          { "path": "getTotal", "call": true, "value": 0 }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "team",
+    "classExport": "Team",
+    "constructorArgs": ["Core", []],
+    "expect": [{ "path": "memberCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addMember",
+        "args": [{ "name": "Alex", "role": "developer" }],
+        "expect": [{ "path": "memberCount", "value": 1 }]
+      },
+      {
+        "method": "removeMember",
+        "args": ["Alex"],
+        "expect": [{ "path": "members", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "recipe",
+    "classExport": "Recipe",
+    "constructorArgs": ["Soup", [], ["Boil water"]],
+    "expect": [
+      { "path": "steps", "value": ["Boil water"] },
+      { "path": "ingredientCount", "value": 0 }
+    ],
+    "actions": [
+      {
+        "method": "addIngredient",
+        "args": ["Water"],
+        "expect": [{ "path": "ingredientCount", "value": 1 }]
+      },
+      {
+        "method": "removeIngredient",
+        "args": ["Water"],
+        "expect": [{ "path": "ingredients", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "participant-event",
+    "classExport": "Event",
+    "constructorArgs": [7, "Meetup", [], "2030-07-14"],
+    "expect": [
+      { "path": "date", "value": "2030-07-14" },
+      { "path": "participantCount", "value": 0 }
+    ],
+    "actions": [
+      {
+        "method": "addParticipant",
+        "args": ["Mia"],
+        "expect": [{ "path": "participantCount", "value": 1 }]
+      },
+      {
+        "method": "removeParticipant",
+        "args": ["Mia"],
+        "expect": [{ "path": "participants", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "category-product",
+    "classExport": "Product",
+    "constructorArgs": [8, "Monitor", [], 30000],
+    "expect": [
+      { "path": "price", "value": 30000 },
+      { "path": "categoryCount", "value": 0 }
+    ],
+    "actions": [
+      {
+        "method": "addCategory",
+        "args": ["electronics"],
+        "expect": [{ "path": "categoryCount", "value": 1 }]
+      },
+      {
+        "method": "removeCategory",
+        "args": ["electronics"],
+        "expect": [{ "path": "categories", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "car",
+    "classExport": "Car",
+    "constructorArgs": ["Volvo", "XC40", []],
+    "expect": [{ "path": "ownerCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addOwner",
+        "args": ["Nora"],
+        "expect": [{ "path": "ownerCount", "value": 1 }]
+      },
+      {
+        "method": "removeOwner",
+        "args": ["Nora"],
+        "expect": [{ "path": "owners", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "blog-post",
+    "classExport": "BlogPost",
+    "constructorArgs": [10, "ES modules", [], []],
+    "expect": [{ "path": "commentCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addTag",
+        "args": ["javascript"],
+        "expect": [{ "path": "tags", "value": ["javascript"] }]
+      },
+      {
+        "method": "removeTag",
+        "args": ["javascript"],
+        "expect": [{ "path": "tags", "value": [] }]
+      },
+      {
+        "method": "addComment",
+        "args": [{ "author": "Max", "text": "Useful" }],
+        "expect": [{ "path": "commentCount", "value": 1 }]
+      }
+    ]
+  },
+  {
+    "taskId": "user",
+    "classExport": "User",
+    "constructorArgs": [11, "Lee", []],
+    "expect": [{ "path": "friendCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addFriend",
+        "args": [12],
+        "expect": [{ "path": "friendCount", "value": 1 }]
+      },
+      {
+        "method": "removeFriend",
+        "args": [12],
+        "expect": [{ "path": "friends", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "clothing-item",
+    "classExport": "ClothingItem",
+    "constructorArgs": [12, "T-shirt", "M", []],
+    "expect": [{ "path": "colorsCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addColor",
+        "args": ["blue"],
+        "expect": [{ "path": "colorsCount", "value": 1 }]
+      },
+      {
+        "method": "removeColor",
+        "args": ["blue"],
+        "expect": [{ "path": "colors", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "game",
+    "classExport": "Game",
+    "constructorArgs": ["Portal", [], 2007],
+    "expect": [
+      { "path": "releaseYear", "value": 2007 },
+      { "path": "platformCount", "value": 0 }
+    ],
+    "actions": [
+      {
+        "method": "addPlatform",
+        "args": ["PC"],
+        "expect": [{ "path": "platformCount", "value": 1 }]
+      },
+      {
+        "method": "removePlatform",
+        "args": ["PC"],
+        "expect": [{ "path": "platforms", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "course",
+    "classExport": "Course",
+    "constructorArgs": [14, "Web", []],
+    "expect": [{ "path": "studentCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addStudent",
+        "args": [{ "id": 1, "name": "Eva" }],
+        "expect": [{ "path": "studentCount", "value": 1 }]
+      },
+      {
+        "method": "removeStudent",
+        "args": [1],
+        "expect": [{ "path": "students", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "travel",
+    "classExport": "Travel",
+    "constructorArgs": [15, "Sam", []],
+    "expect": [{ "path": "visitedCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addCountry",
+        "args": ["Japan"],
+        "expect": [{ "path": "visitedCount", "value": 1 }]
+      },
+      {
+        "method": "removeCountry",
+        "args": ["Japan"],
+        "expect": [{ "path": "visitedCountries", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "restaurant",
+    "classExport": "Restaurant",
+    "constructorArgs": ["Bistro", []],
+    "expect": [{ "path": "menuSize", "value": 0 }],
+    "actions": [
+      {
+        "method": "addDish",
+        "args": [{ "name": "Pasta", "price": 700 }],
+        "expect": [{ "path": "menuSize", "value": 1 }]
+      },
+      {
+        "method": "removeDish",
+        "args": ["Pasta"],
+        "expect": [{ "path": "menu", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "programmer",
+    "classExport": "Programmer",
+    "constructorArgs": [17, "Kim", []],
+    "expect": [{ "path": "languageCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addLanguage",
+        "args": ["JavaScript"],
+        "expect": [{ "path": "languageCount", "value": 1 }]
+      },
+      {
+        "method": "removeLanguage",
+        "args": ["JavaScript"],
+        "expect": [{ "path": "languages", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "organizer-event",
+    "classExport": "Event",
+    "constructorArgs": [18, "Conference", [], "Moscow"],
+    "expect": [
+      { "path": "location", "value": "Moscow" },
+      { "path": "organizerCount", "value": 0 }
+    ],
+    "actions": [
+      {
+        "method": "addOrganizer",
+        "args": ["Ira"],
+        "expect": [{ "path": "organizerCount", "value": 1 }]
+      },
+      {
+        "method": "removeOrganizer",
+        "args": ["Ira"],
+        "expect": [{ "path": "organizers", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "supplier-product",
+    "classExport": "Product",
+    "constructorArgs": [19, "Coffee", []],
+    "expect": [{ "path": "supplierCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addSupplier",
+        "args": ["Acme"],
+        "expect": [{ "path": "supplierCount", "value": 1 }]
+      },
+      {
+        "method": "removeSupplier",
+        "args": ["Acme"],
+        "expect": [{ "path": "suppliers", "value": [] }]
+      }
+    ]
+  },
+  {
+    "taskId": "channel",
+    "classExport": "Channel",
+    "constructorArgs": [20, "News", []],
+    "expect": [{ "path": "subscriberCount", "value": 0 }],
+    "actions": [
+      {
+        "method": "addSubscriber",
+        "args": ["Zoe"],
+        "expect": [{ "path": "subscriberCount", "value": 1 }]
+      },
+      {
+        "method": "removeSubscriber",
+        "args": ["Zoe"],
+        "expect": [{ "path": "subscribers", "value": [] }]
+      }
+    ]
+  }
+]

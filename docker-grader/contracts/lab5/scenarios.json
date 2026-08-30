@@ -1,0 +1,452 @@
+[
+  {
+    "taskId": "book-sorting",
+    "required": [
+      { "testId": "book-card", "minimum": 3 },
+      { "testId": "sort-title" },
+      { "testId": "sort-price" },
+      { "testId": "sort-rating" },
+      { "testId": "sort-direction" }
+    ],
+    "scenarios": [
+      {
+        "name": "Сортировка по названию изменяет состояние списка",
+        "actions": [{ "type": "click", "testId": "sort-title" }],
+        "expect": [
+          {
+            "type": "changed",
+            "testId": "sort-title",
+            "state": "attribute",
+            "attribute": "aria-pressed"
+          },
+          { "type": "changed", "testId": "sort-direction" }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "book-pagination",
+    "required": [
+      { "testId": "book-card", "minimum": 3 },
+      { "testId": "page-next" },
+      { "testId": "page-previous" },
+      { "testId": "page-indicator" },
+      { "testId": "page-number", "minimum": 2 }
+    ],
+    "scenarios": [
+      {
+        "name": "Переход на следующую страницу",
+        "actions": [{ "type": "click", "testId": "page-next" }],
+        "expect": [{ "type": "changed", "testId": "page-indicator" }]
+      }
+    ]
+  },
+  {
+    "taskId": "book-slider",
+    "required": [
+      { "testId": "book-slide" },
+      { "testId": "slide-next" },
+      { "testId": "slide-previous" },
+      { "testId": "slide-indicator" },
+      { "testId": "slide-page", "minimum": 3 }
+    ],
+    "scenarios": [
+      {
+        "name": "Переключение слайда вперёд",
+        "actions": [{ "type": "click", "testId": "slide-next" }],
+        "expect": [{ "type": "changed", "testId": "slide-indicator" }]
+      }
+    ]
+  },
+  {
+    "taskId": "book-rating",
+    "required": [
+      { "testId": "book-card" },
+      { "testId": "rating-star", "minimum": 5 },
+      { "testId": "rating-value" }
+    ],
+    "scenarios": [
+      {
+        "name": "Пользовательская оценка обновляет рейтинг",
+        "actions": [{ "type": "click", "testId": "rating-star", "index": 2 }],
+        "expect": [{ "type": "changed", "testId": "rating-value" }]
+      }
+    ]
+  },
+  {
+    "taskId": "book-tree",
+    "required": [
+      { "testId": "tree" },
+      { "testId": "tree-toggle" },
+      { "testId": "tree-branch" },
+      { "testId": "tree-level", "minimum": 4 }
+    ],
+    "scenarios": [
+      {
+        "name": "Ветка дерева раскрывается или сворачивается",
+        "actions": [{ "type": "click", "testId": "tree-toggle" }],
+        "expect": [
+          {
+            "type": "changed",
+            "testId": "tree-toggle",
+            "state": "attribute",
+            "attribute": "aria-expanded"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "timer",
+    "required": [
+      { "testId": "timer-input" },
+      { "testId": "timer-start" },
+      { "testId": "timer-display" }
+    ],
+    "scenarios": [
+      {
+        "name": "Таймер запускает обратный отсчёт",
+        "prepare": [{ "type": "fill", "testId": "timer-input", "value": "1" }],
+        "actions": [{ "type": "click", "testId": "timer-start" }],
+        "expect": [{ "type": "changed", "testId": "timer-display" }]
+      }
+    ]
+  },
+  {
+    "taskId": "todo-list",
+    "required": [
+      { "testId": "todo-input" },
+      { "testId": "todo-add" },
+      { "testId": "todo-list", "visible": false },
+      { "testId": "todo-filter", "minimum": 3 }
+    ],
+    "scenarios": [
+      {
+        "name": "Добавление новой задачи",
+        "prepare": [{ "type": "fill", "testId": "todo-input", "value": "CI task 95007" }],
+        "actions": [{ "type": "click", "testId": "todo-add" }],
+        "expect": [{ "type": "increased", "testId": "todo-item", "state": "count" }]
+      }
+    ]
+  },
+  {
+    "taskId": "movie-booking",
+    "required": [
+      { "testId": "movie-card" },
+      { "testId": "booking-form" },
+      { "testId": "booking-submit" },
+      { "testId": "booking-confirmation", "visible": false }
+    ],
+    "scenarios": [
+      {
+        "name": "Валидная форма показывает подтверждение",
+        "prepare": [
+          { "type": "fill", "testId": "booking-name", "value": "CI Student" },
+          { "type": "fill", "testId": "booking-email", "value": "ci@example.com" },
+          { "type": "fill", "testId": "booking-phone", "value": "+79991234567" }
+        ],
+        "actions": [{ "type": "click", "testId": "booking-submit" }],
+        "expect": [{ "type": "visible", "testId": "booking-confirmation" }]
+      }
+    ]
+  },
+  {
+    "taskId": "snake",
+    "required": [
+      { "testId": "game-board" },
+      { "testId": "game-score" },
+      { "testId": "game-restart" }
+    ],
+    "scenarios": [
+      {
+        "name": "Игровое поле реагирует на управление",
+        "actions": [{ "type": "press", "key": "ArrowRight" }],
+        "expect": [{ "type": "changed", "testId": "game-board", "state": "visual" }]
+      }
+    ]
+  },
+  {
+    "taskId": "calculator",
+    "required": [
+      { "testId": "calculator-display" },
+      { "testId": "calculator-key", "minimum": 10 },
+      { "testId": "calculator-equals" },
+      { "testId": "calculator-clear" }
+    ],
+    "scenarios": [
+      {
+        "name": "Калькулятор выполняет сложение",
+        "actions": [
+          { "type": "click", "selector": "[data-value=\"2\"]" },
+          { "type": "click", "selector": "[data-operation=\"add\"]" },
+          { "type": "click", "selector": "[data-value=\"3\"]" },
+          { "type": "click", "testId": "calculator-equals" }
+        ],
+        "expect": [
+          { "type": "matches", "testId": "calculator-display", "pattern": "(^|\\D)5(?:[.,]0+)?$" }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "chess",
+    "required": [
+      { "testId": "chess-board" },
+      { "testId": "chess-cell", "minimum": 64 },
+      { "testId": "chess-piece", "minimum": 2 },
+      { "testId": "movable-piece" }
+    ],
+    "scenarios": [
+      {
+        "name": "Выбор фигуры подсвечивает допустимые ходы",
+        "actions": [{ "type": "click", "testId": "movable-piece" }],
+        "expect": [{ "type": "increased", "testId": "available-move", "state": "count" }]
+      }
+    ]
+  },
+  {
+    "taskId": "tetris",
+    "required": [{ "testId": "game-board" }, { "testId": "game-score" }],
+    "scenarios": [
+      {
+        "name": "Фигура движется по команде игрока",
+        "actions": [{ "type": "press", "key": "ArrowLeft" }],
+        "expect": [{ "type": "changed", "testId": "game-board", "state": "visual" }]
+      }
+    ]
+  },
+  {
+    "taskId": "chat",
+    "required": [
+      { "testId": "chat-name" },
+      { "testId": "chat-message" },
+      { "testId": "chat-send" },
+      { "testId": "chat-history", "visible": false },
+      { "testId": "chat-clear" }
+    ],
+    "scenarios": [
+      {
+        "name": "Сообщение добавляется и сохраняется",
+        "prepare": [
+          { "type": "fill", "testId": "chat-name", "value": "CI User" },
+          { "type": "fill", "testId": "chat-message", "value": "CI message 95013" }
+        ],
+        "actions": [{ "type": "click", "testId": "chat-send" }],
+        "expect": [
+          { "type": "increased", "testId": "chat-item", "state": "count" },
+          { "type": "storage-changed" }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "habit-tracker",
+    "required": [
+      { "testId": "habit-input" },
+      { "testId": "habit-add" },
+      { "testId": "habit-list", "visible": false },
+      { "testId": "habit-reset" }
+    ],
+    "scenarios": [
+      {
+        "name": "Привычка добавляется и сохраняется",
+        "prepare": [{ "type": "fill", "testId": "habit-input", "value": "CI habit 95014" }],
+        "actions": [{ "type": "click", "testId": "habit-add" }],
+        "expect": [
+          { "type": "increased", "testId": "habit-item", "state": "count" },
+          { "type": "storage-changed" }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "notes",
+    "required": [
+      { "testId": "note-title" },
+      { "testId": "note-content" },
+      { "testId": "note-add" },
+      { "testId": "note-search" },
+      { "testId": "note-list", "visible": false }
+    ],
+    "scenarios": [
+      {
+        "name": "Создание новой заметки",
+        "prepare": [
+          { "type": "fill", "testId": "note-title", "value": "CI note 95015" },
+          { "type": "fill", "testId": "note-content", "value": "Automated browser check" }
+        ],
+        "actions": [{ "type": "click", "testId": "note-add" }],
+        "expect": [{ "type": "increased", "testId": "note-item", "state": "count" }]
+      }
+    ]
+  },
+  {
+    "taskId": "weather",
+    "required": [
+      { "testId": "weather-city" },
+      { "testId": "weather-submit" },
+      { "testId": "weather-current" },
+      { "testId": "weather-forecast" }
+    ],
+    "scenarios": [
+      {
+        "name": "Смена города обновляет прогноз",
+        "prepare": [{ "type": "fill", "testId": "weather-city", "value": "Москва" }],
+        "actions": [{ "type": "click", "testId": "weather-submit" }],
+        "expect": [{ "type": "changed", "testId": "weather-current" }]
+      }
+    ]
+  },
+  {
+    "taskId": "kanban",
+    "required": [
+      { "testId": "kanban-column", "minimum": 3 },
+      { "testId": "kanban-card" },
+      { "testId": "kanban-add" },
+      { "testId": "kanban-done" }
+    ],
+    "scenarios": [
+      {
+        "name": "Карточка переносится в другую колонку",
+        "actions": [{ "type": "drag", "testId": "kanban-card", "targetTestId": "kanban-done" }],
+        "expect": [{ "type": "changed", "testId": "kanban-done" }, { "type": "storage-changed" }]
+      }
+    ]
+  },
+  {
+    "taskId": "finance",
+    "required": [
+      { "testId": "transaction-description" },
+      { "testId": "transaction-amount" },
+      { "testId": "transaction-type" },
+      { "testId": "transaction-add" },
+      { "testId": "transaction-history", "visible": false },
+      { "testId": "finance-chart" }
+    ],
+    "scenarios": [
+      {
+        "name": "Добавление финансовой операции",
+        "prepare": [
+          { "type": "fill", "testId": "transaction-description", "value": "CI income 95018" },
+          { "type": "fill", "testId": "transaction-amount", "value": "100" },
+          { "type": "select", "testId": "transaction-type", "value": "income" }
+        ],
+        "actions": [{ "type": "click", "testId": "transaction-add" }],
+        "expect": [{ "type": "increased", "testId": "transaction-item", "state": "count" }]
+      }
+    ]
+  },
+  {
+    "taskId": "book-modal",
+    "required": [
+      { "testId": "book-card" },
+      { "testId": "book-modal", "visible": false },
+      { "testId": "modal-close", "visible": false }
+    ],
+    "scenarios": [
+      {
+        "name": "Клик по книге открывает модальное окно",
+        "actions": [{ "type": "click", "testId": "book-card" }],
+        "expect": [{ "type": "visible", "testId": "book-modal" }]
+      }
+    ]
+  },
+  {
+    "taskId": "book-details",
+    "required": [{ "testId": "book-description" }, { "testId": "details-toggle" }],
+    "scenarios": [
+      {
+        "name": "Описание книги раскрывается",
+        "actions": [{ "type": "click", "testId": "details-toggle" }],
+        "expect": [
+          {
+            "type": "changed",
+            "testId": "details-toggle",
+            "state": "attribute",
+            "attribute": "aria-expanded"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "faq",
+    "required": [
+      { "testId": "faq-item" },
+      { "testId": "faq-toggle" },
+      { "testId": "faq-answer", "visible": false }
+    ],
+    "scenarios": [
+      {
+        "name": "Ответ FAQ раскрывается",
+        "actions": [{ "type": "click", "testId": "faq-toggle" }],
+        "expect": [{ "type": "visible", "testId": "faq-answer" }]
+      }
+    ]
+  },
+  {
+    "taskId": "tic-tac-toe",
+    "required": [
+      { "testId": "game-board" },
+      { "testId": "game-cell", "minimum": 9 },
+      { "testId": "game-restart" }
+    ],
+    "scenarios": [
+      {
+        "name": "Ход игрока отмечает клетку",
+        "actions": [{ "type": "click", "testId": "game-cell" }],
+        "expect": [{ "type": "changed", "testId": "game-cell" }]
+      }
+    ]
+  },
+  {
+    "taskId": "theme-switcher",
+    "required": [{ "testId": "book-list" }, { "testId": "theme-toggle" }],
+    "scenarios": [
+      {
+        "name": "Переключение темы меняет внешний вид приложения",
+        "actions": [{ "type": "click", "testId": "theme-toggle" }],
+        "expect": [{ "type": "changed", "testId": "app", "state": "visual" }]
+      }
+    ]
+  },
+  {
+    "taskId": "shopping-cart",
+    "required": [
+      { "testId": "book-card" },
+      { "testId": "cart-add" },
+      { "testId": "cart-list", "visible": false },
+      { "testId": "cart-total" }
+    ],
+    "scenarios": [
+      {
+        "name": "Книга добавляется в корзину и меняет сумму",
+        "actions": [{ "type": "click", "testId": "cart-add" }],
+        "expect": [
+          { "type": "increased", "testId": "cart-item", "state": "count" },
+          { "type": "changed", "testId": "cart-total" }
+        ]
+      }
+    ]
+  },
+  {
+    "taskId": "favorites",
+    "required": [
+      { "testId": "book-card" },
+      { "testId": "favorite-add" },
+      { "testId": "favorites-list", "visible": false },
+      { "testId": "favorites-count" }
+    ],
+    "scenarios": [
+      {
+        "name": "Книга добавляется в избранное и сохраняется",
+        "actions": [{ "type": "click", "testId": "favorite-add" }],
+        "expect": [
+          { "type": "increased", "testId": "favorite-item", "state": "count" },
+          { "type": "changed", "testId": "favorites-count" },
+          { "type": "storage-changed" }
+        ]
+      }
+    ]
+  }
+]

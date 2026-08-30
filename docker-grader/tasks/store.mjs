@@ -11,20 +11,24 @@ export async function loadTaskBank() {
     return cache;
   }
 
-  const [variants, lab1, lab2, lab3] = await Promise.all([
+  const [variants, lab1, lab2, lab3, lab4, lab5] = await Promise.all([
     readJson(path.join(taskDirectory, 'variants.json')),
     readJson(path.join(taskDirectory, 'lab1.json')),
     readJson(path.join(taskDirectory, 'lab2.json')),
     readJson(path.join(taskDirectory, 'lab3.json')),
+    readJson(path.join(taskDirectory, 'lab4.json')),
+    readJson(path.join(taskDirectory, 'lab5.json')),
   ]);
 
   const specs = {
     1: new Map(lab1.map((task) => [task.id, task])),
     2: new Map(lab2.map((task) => [task.id, task])),
     3: new Map(lab3.map((task) => [task.id, task])),
+    4: new Map(lab4.map((task) => [task.id, task])),
+    5: new Map(lab5.map((task) => [task.id, task])),
   };
 
-  for (const lab of [1, 2, 3]) {
+  for (const lab of [1, 2, 3, 4, 5]) {
     const mapping = variants.labs[String(lab)];
     if (!Array.isArray(mapping) || mapping.length !== variants.variantCount) {
       throw new Error(`Task bank mapping for lab${lab} is incomplete.`);
@@ -45,11 +49,11 @@ export async function resolveTask(lab, variant) {
   if (!Number.isInteger(variant) || variant < 1 || variant > bank.variants.variantCount) {
     throw new Error(`Unknown variant: ${variant}`);
   }
-  if (lab >= 1 && lab <= 3) {
+  if (lab >= 1 && lab <= 5) {
     const id = bank.variants.labs[String(lab)][variant - 1];
     return bank.specs[lab].get(id);
   }
-  return { id: `variant-${variant}`, title: `Лабораторная ${lab}, вариант ${variant}` };
+  throw new Error(`Unknown lab: ${lab}`);
 }
 
 async function readJson(filename) {

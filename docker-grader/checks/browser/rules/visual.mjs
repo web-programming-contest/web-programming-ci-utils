@@ -17,10 +17,14 @@ async function validateFlag(page, contract) {
     const circle = query('div, span').find((item) => {
       const style = getComputedStyle(item);
       const rect = item.getBoundingClientRect();
+      const radius = style.borderTopLeftRadius;
+      const isRound = radius.endsWith('%')
+        ? number(radius) >= 50
+        : number(radius) >= rect.width / 2 - 1;
       return (
         style.position === 'absolute' &&
         Math.abs(rect.width - rect.height) <= 2 &&
-        number(style.borderRadius) >= rect.width / 2 - 1 &&
+        isRound &&
         colorMatches(style.backgroundColor, rule.circleColor)
       );
     });
