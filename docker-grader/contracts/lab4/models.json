@@ -42,7 +42,7 @@
           { "path": "getAverageGrade", "call": true, "value": 5 },
           {
             "path": "summary",
-            "value": "Студент Anna (id: 17) — средний балл: 5"
+            "value": "Студент Anna (id: 17) — средний балл: 5.00"
           }
         ]
       },
