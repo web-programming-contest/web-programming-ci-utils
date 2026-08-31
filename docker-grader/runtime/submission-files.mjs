@@ -1,6 +1,8 @@
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 
+const ignoredDirectories = new Set(['.git', 'dist', 'node_modules']);
+
 export async function collectSourceFiles(directory) {
   const result = [];
 
@@ -11,7 +13,7 @@ export async function collectSourceFiles(directory) {
       if (entry.isSymbolicLink()) {
         throw new Error(`Symbolic links are forbidden: ${filename}`);
       }
-      if (entry.isDirectory()) {
+      if (entry.isDirectory() && !ignoredDirectories.has(entry.name)) {
         await visit(filename);
       } else if (entry.isFile() && !isBinaryAsset(filename)) {
         result.push(filename);

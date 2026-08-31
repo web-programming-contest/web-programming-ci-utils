@@ -40,9 +40,7 @@ export async function updateWorkflowRefs(repositoryRoot, sha) {
       throw error;
     });
     const synchronizedContents =
-      workflowName === 'progress-report.yml'
-        ? patchProgressSchedule(contents, filename)
-        : contents;
+      workflowName === 'progress-report.yml' ? patchProgressSchedule(contents, filename) : contents;
     updates.push({
       contents: patchWorkflow(synchronizedContents, normalizedSha, filename),
       filename,
@@ -123,20 +121,14 @@ function patchWorkflow(contents, sha, filename) {
 }
 
 function patchProgressSchedule(contents, filename) {
-  const pattern =
-    /^([ \t]*)-[ \t]+cron:[^\r\n]*(\r?\n)(?:\1[ \t]+timezone:[^\r\n]*(\r?\n|$))?/gm;
+  const pattern = /^([ \t]*)-[ \t]+cron:[^\r\n]*(\r?\n)(?:\1[ \t]+timezone:[^\r\n]*(\r?\n|$))?/gm;
   let matches = 0;
-  const result = contents.replace(
-    pattern,
-    (_match, indent, cronEol, timezoneEol) => {
-      matches += 1;
-      return `${indent}- cron: "${progressSchedule.cron}"${cronEol}${indent}  timezone: "${progressSchedule.timezone}"${timezoneEol ?? cronEol}`;
-    },
-  );
+  const result = contents.replace(pattern, (_match, indent, cronEol, timezoneEol) => {
+    matches += 1;
+    return `${indent}- cron: "${progressSchedule.cron}"${cronEol}${indent}  timezone: "${progressSchedule.timezone}"${timezoneEol ?? cronEol}`;
+  });
   if (matches !== 1) {
-    throw new Error(
-      `${filename}: schedule must contain exactly one cron entry; found ${matches}.`,
-    );
+    throw new Error(`${filename}: schedule must contain exactly one cron entry; found ${matches}.`);
   }
   return result;
 }

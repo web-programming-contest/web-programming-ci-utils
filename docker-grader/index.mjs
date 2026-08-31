@@ -68,6 +68,7 @@ export async function gradeSubmission({ submissionDirectory, lab, resultsDirecto
       const siteDirectory = await prepareSite(
         submissionDirectory,
         path.join(resultsDirectory, 'site'),
+        lab,
       );
       suite.run(
         'Browser validation',

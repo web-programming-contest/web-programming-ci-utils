@@ -299,9 +299,9 @@ testov.oleg/lab2/
 Запрещены:
 
 - файлы вне единственного разрешённого каталога;
-- `.git`, `.github`, `node_modules` и переходы `..` в пути;
-- `package.json`, `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock` внутри
-  сдачи;
+- `.git`, `.github`, `dist`, `node_modules` и переходы `..` в пути;
+- lock-файлы внутри сдачи;
+- `package.json` внутри lab1–lab4 или вне корня lab5;
 - symlink;
 - Git submodule;
 - executable-файлы;
@@ -329,7 +329,7 @@ testov.oleg/lab2/
 | lab2         | `README.md` и ровно один из `solution.js`, `solution.ts`                                              |
 | lab3         | `README.md` и ровно один из `solution.js`, `solution.ts`                                              |
 | lab4         | `README.md`, `index.html`, `styles.css`, ровно один `main.js/main.ts`, ровно один `model.js/model.ts` |
-| lab5         | `README.md`, `index.html`, `styles.css`, ровно один `main.js/main.ts`                                 |
+| lab5         | `README.md`, React `package.json`, HTML, CSS и один JS/JSX/TS/TSX entry                               |
 
 Файл `submission.json` запрещён. Вариант берётся только из названия PR.
 
@@ -564,6 +564,17 @@ Query-функции могут быть синхронными или асин�
 и временно подменяет ссылку в подготовленной копии `index.html`.
 
 ### 11.5. Lab5
+
+Lab5 — React-приложение на JavaScript или TypeScript. Студент может использовать
+Vite либо Webpack локально. Grader проверяет `package.json`, но не устанавливает
+объявленные зависимости и не исполняет студенческий `build`: исходники
+собираются доверенным esbuild с закреплёнными React-зависимостями.
+
+Поддерживаются `index.html` и `public/index.html`, явный локальный module script,
+а также entry `main.*`, `src/main.*` и `src/index.*` с расширениями `.js`,
+`.jsx`, `.ts`, `.tsx`. JSX использует automatic runtime; импортированные CSS,
+изображения и шрифты включаются в подготовленный сайт. Каталоги `node_modules`
+и `dist` игнорируются.
 
 После общих quality checks Chromium проверяет:
 

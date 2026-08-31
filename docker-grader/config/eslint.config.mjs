@@ -10,7 +10,7 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     basePath: filesystemRoot,
-    files: ['**/*.{js,mjs,ts}'],
+    files: ['**/*.{js,mjs,cjs,jsx,ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       globals: globals.browser,
@@ -51,13 +51,20 @@ export default tseslint.config(
   },
   {
     basePath: filesystemRoot,
-    files: ['**/*.ts'],
+    files: ['**/*.{ts,tsx}'],
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-namespace': 'error',
       '@typescript-eslint/no-require-imports': 'error',
       '@typescript-eslint/prefer-as-const': 'error',
       'no-array-constructor': 'off',
+    },
+  },
+  {
+    basePath: filesystemRoot,
+    files: ['**/{vite,webpack}.config.{js,mjs,cjs,ts}'],
+    languageOptions: {
+      globals: globals.node,
     },
   },
 );

@@ -1,5 +1,6 @@
 import { lstat, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { resolveLab5Project, validateLab5Package } from '../runtime/lab5-project.mjs';
 
 const README_SECTIONS = ['Задание', 'Реализация', 'Запуск'];
 
@@ -67,18 +68,19 @@ export async function validateRequiredFiles(submissionDirectory, lab) {
     if (entries.length !== 1) {
       throw new Error(`lab${lab} must contain exactly one of solution.js or solution.ts.`);
     }
-  } else {
+  } else if (lab === 4) {
     required.push('index.html', 'styles.css');
     const entries = await existingFiles(submissionDirectory, ['main.js', 'main.ts']);
     if (entries.length !== 1) {
       throw new Error(`lab${lab} must contain exactly one of main.js or main.ts.`);
     }
-    if (lab === 4) {
-      const modelEntries = await existingFiles(submissionDirectory, ['model.js', 'model.ts']);
-      if (modelEntries.length !== 1) {
-        throw new Error('lab4 must contain exactly one of model.js or model.ts.');
-      }
+    const modelEntries = await existingFiles(submissionDirectory, ['model.js', 'model.ts']);
+    if (modelEntries.length !== 1) {
+      throw new Error('lab4 must contain exactly one of model.js or model.ts.');
     }
+  } else if (lab === 5) {
+    await validateLab5Package(submissionDirectory);
+    await resolveLab5Project(submissionDirectory);
   }
 
   for (const filename of required) {

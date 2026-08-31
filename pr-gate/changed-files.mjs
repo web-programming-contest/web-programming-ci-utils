@@ -14,7 +14,9 @@ export function validateChangedPaths(files, slug, lab) {
   for (const file of files) {
     const candidates = [file.filename, file.previous_filename].filter(Boolean);
     for (const filename of candidates) {
-      validateRepositoryPath(filename);
+      validateRepositoryPath(filename, {
+        packageManifestPath: lab === 5 ? `${prefix}package.json` : null,
+      });
       if (!filename.startsWith(prefix)) {
         throw new Error(`File outside the only allowed directory ${prefix}: ${filename}`);
       }
@@ -25,9 +27,10 @@ export function validateChangedPaths(files, slug, lab) {
 
 export function validateTreeEntries(entries, prefix) {
   let totalSize = 0;
+  const packageManifestPath = /(?:^|\/)lab5\/$/.test(prefix) ? `${prefix}package.json` : null;
 
   for (const entry of entries) {
-    validateRepositoryPath(entry.path);
+    validateRepositoryPath(entry.path, { packageManifestPath });
     if (!entry.path.startsWith(prefix)) {
       continue;
     }
@@ -62,16 +65,20 @@ export function validateTreeEntries(entries, prefix) {
   }
 }
 
-function validateRepositoryPath(filename) {
+function validateRepositoryPath(filename, { packageManifestPath = null } = {}) {
   const parts = filename.split('/');
   if (
     path.posix.isAbsolute(filename) ||
     filename.includes('\\') ||
-    parts.some((part) => ['..', '.git', '.github', 'node_modules'].includes(part))
+    parts.some((part) => ['..', '.git', '.github', 'dist', 'node_modules'].includes(part))
   ) {
     throw new Error(`Unsafe repository path: ${filename}`);
   }
-  if (['package.json', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'].includes(parts.at(-1))) {
+  const basename = parts.at(-1);
+  if (
+    ['package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'].includes(basename) ||
+    (basename === 'package.json' && filename !== packageManifestPath)
+  ) {
     throw new Error(`Student dependency manifests are not supported: ${filename}`);
   }
 }
