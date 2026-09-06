@@ -139,12 +139,14 @@ async function validateStatusIcons(page, contract) {
     if (items.length < 3) {
       return { details: 'Нужны минимум три задачи.', pass: false };
     }
-    const contents = items.map(
-      (item) =>
-        `${getComputedStyle(item, '::before').content}${getComputedStyle(item, '::after').content}`,
-    );
-    const pass =
-      new Set(contents).size >= 3 && contents.every((value) => !value.includes('nonenone'));
+    const pseudoElements = ['::before', '::after', '::marker'];
+    const contents = items.map((item) => {
+      const content = pseudoElements
+        .map((pseudoElement) => getComputedStyle(item, pseudoElement).content)
+        .find((value) => !['', 'none', 'normal', '""'].includes(value));
+      return content ?? '';
+    });
+    const pass = new Set(contents).size >= 3 && contents.every(Boolean);
     return { details: pass ? 'ok' : 'Нужны три разные иконки через CSS-псевдоэлементы.', pass };
   });
 }
