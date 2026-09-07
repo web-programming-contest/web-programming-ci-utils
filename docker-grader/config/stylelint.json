@@ -5,6 +5,10 @@
     "color-function-notation": "modern",
     "declaration-block-no-redundant-longhand-properties": true,
     "declaration-no-important": true,
+    "font-family-no-missing-generic-family-keyword": [
+      true,
+      { "ignoreFontFamilies": ["/^arial$/i"] }
+    ],
     "selector-class-pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
     "selector-max-id": 0,
     "selector-no-qualifying-type": [true, { "ignore": ["attribute"] }]
