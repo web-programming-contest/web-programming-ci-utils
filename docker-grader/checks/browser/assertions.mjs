@@ -110,10 +110,20 @@ export async function checkInteraction(page, contract) {
 
 async function checkCssValue(locator, property, expected, label) {
   const actual = await cssValue(locator, property);
+  // A single required family names the primary font; fallback fonts are allowed.
+  const matches =
+    property === 'font-family' && !expected.includes(',')
+      ? primaryFontFamily(actual) === primaryFontFamily(expected)
+      : actual === expected;
   ensure(
-    actual === expected,
+    matches,
     `${label}: неверное значение CSS-свойства ${formatValue(property)}. Ожидалось: ${formatValue(expected)}. Получено: ${formatValue(actual)}.`,
   );
+}
+
+function primaryFontFamily(value) {
+  const match = value.trim().match(/^(?:"([^"]+)"|'([^']+)'|([^,"']+))\s*(?:,|$)/);
+  return match ? (match[1] ?? match[2] ?? match[3]).trim().toLowerCase() : null;
 }
 
 export async function cssValue(locator, property) {
