@@ -58,14 +58,15 @@ fork PR не получает secrets, поэтому приватный grader 
 git clone git@github.com:YOUR-ORG/web-programming-ci-utils.git
 cd web-programming-ci-utils
 npm ci
+npm run setup:browser
 npm run validate
 ```
 
 `npm ci` должен использовать сохранённый lock-файл. Не удаляйте
 `package-lock.json`: Dockerfile также копирует его и выполняет `npm ci`.
 
-Для прямого локального запуска lab1, lab4 или lab5 дополнительно установите
-Chromium:
+Chromium нужен браузерным регрессионным тестам и прямому локальному запуску
+lab1, lab4 или lab5:
 
 ```bash
 npm run setup:browser
@@ -946,11 +947,12 @@ npm run validate
 Последовательно выполняет:
 
 ```text
-format:check → lint → contracts:check
+format:check → lint → test → contracts:check
 ```
 
-Это обязательная локальная проверка перед commit `ci-utils`. Собственный GitHub
-Actions workflow дополнительно собирает Docker image.
+Это обязательная локальная проверка перед commit `ci-utils`. Браузерным тестам
+нужен Chromium (`npm run setup:browser`). Собственный GitHub Actions workflow
+устанавливает его с системными зависимостями и дополнительно собирает Docker image.
 
 ## 15. Внутренние CLI entrypoint
 

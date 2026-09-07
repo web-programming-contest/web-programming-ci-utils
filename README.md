@@ -134,7 +134,8 @@ npm run grade -- --submission /path/to/course/ivanov.ivan/lab2 --lab 2 --variant
 npm run setup:browser
 ```
 
-Проверка форматирования и линтеров самого utils-репозитория:
+Проверка форматирования, линтеров и тестов самого utils-репозитория
+(включая браузерные регрессионные тесты; Chromium устанавливается командой выше):
 
 ```bash
 npm run validate

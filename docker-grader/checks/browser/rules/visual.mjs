@@ -66,6 +66,30 @@ async function validateHoverCard(page, contract) {
   const image = page.locator(result.imageSelector);
   const previousShadow = await cssValue(card, 'box-shadow');
   await card.hover();
+  // hover() moves the pointer but does not wait for CSS transitions or delays.
+  try {
+    await page.waitForFunction(
+      ({ cardSelector, imageSelector, previousShadow }) => {
+        const card = document.querySelector(cardSelector);
+        const image = document.querySelector(imageSelector);
+        if (!card || !image) {
+          return false;
+        }
+        const style = getComputedStyle(card);
+        return (
+          style.backgroundColor === 'rgb(224, 247, 250)' &&
+          style.boxShadow !== previousShadow &&
+          getComputedStyle(image).transform !== 'none'
+        );
+      },
+      { ...result, previousShadow },
+    );
+  } catch (error) {
+    if (error.name !== 'TimeoutError') {
+      throw error;
+    }
+    // Report the specific missing effect below instead of a generic timeout.
+  }
   assert.equal(
     await cssValue(card, 'background-color'),
     'rgb(224, 247, 250)',
