@@ -202,7 +202,7 @@ async function validateHorizontalNav(page, contract) {
 
 async function validateProductReviewCard(page, contract) {
   await evaluateRule(page, contract, () => {
-    const { number, query } = globalThis.__courseGrader;
+    const { number, query, visible } = globalThis.__courseGrader;
     const card = query('article, section, div').find(
       (item) =>
         Math.abs(item.getBoundingClientRect().width - 350) <= 1 &&
@@ -212,19 +212,55 @@ async function validateProductReviewCard(page, contract) {
     if (!card) {
       return { details: 'Нужна карточка 350px с изображением и списком отзывов.', pass: false };
     }
-    const imageRect = card.querySelector('img').getBoundingClientRect();
-    const heading = card.querySelector('h1, h2, h3');
-    const style = heading && getComputedStyle(heading);
-    const pass =
-      Math.abs(imageRect.width - 350) <= 1 &&
-      Math.abs(imageRect.height - 200) <= 1 &&
-      style?.fontFamily.toLowerCase().includes('roboto') &&
-      Math.abs(number(style.fontSize) - 18) <= 0.1 &&
-      number(style.fontWeight) >= 600;
-    return {
-      details: pass ? 'ok' : 'Ожидаются изображение 350×200 и заголовок Roboto 18px semibold.',
-      pass,
+    const image = card.querySelector('img');
+    const imageRect = image.getBoundingClientRect();
+    if (Math.abs(imageRect.width - 350) > 1 || Math.abs(imageRect.height - 200) > 1) {
+      return { details: 'Ожидается изображение 350×200.', pass: false };
+    }
+
+    // The assignment specifies text and styles, not heading tags or class names.
+    // Keep this lookup local to this task; other contracts still use checkElement.
+    const textElements = [...card.querySelectorAll('*')].filter(
+      (element) =>
+        visible(element) &&
+        !element.closest('ul') &&
+        !element.querySelector('img, ul') &&
+        [...element.childNodes].some(
+          (node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim(),
+        ),
+    );
+    const reviewsTitle = textElements.find((element) =>
+      /^отзывы(?:\s|[.:!?(]|$)/i.test(element.textContent.trim()),
+    );
+    if (!reviewsTitle) {
+      return { details: 'В карточке нужен заголовок блока «Отзывы».', pass: false };
+    }
+    const matchesTitleStyle = (element, size) => {
+      const style = getComputedStyle(element);
+      return (
+        style.fontFamily.toLowerCase().includes('roboto') &&
+        Math.abs(number(style.fontSize) - size) <= 0.1 &&
+        number(style.fontWeight) >= 600
+      );
     };
+    if (!matchesTitleStyle(reviewsTitle, 16)) {
+      return { details: 'Заголовок «Отзывы» должен быть Roboto 16px semibold.', pass: false };
+    }
+
+    const productTitle = textElements.find(
+      (element) =>
+        !element.contains(reviewsTitle) &&
+        Boolean(image.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+        Boolean(element.compareDocumentPosition(reviewsTitle) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+        matchesTitleStyle(element, 18),
+    );
+    if (!productTitle) {
+      return {
+        details: 'Между изображением и отзывами нужно название товара Roboto 18px semibold.',
+        pass: false,
+      };
+    }
+    return { details: 'ok', pass: true };
   });
 }
 
