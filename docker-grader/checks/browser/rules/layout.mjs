@@ -47,19 +47,54 @@ async function validateLayeredRectangles(page, contract) {
 
 async function validateHorizontalCards(page, contract) {
   await evaluateRule(page, contract, () => {
-    const { query } = globalThis.__courseGrader;
-    const images = query('img').filter((item) => {
-      const rect = item.getBoundingClientRect();
-      return Math.abs(rect.width - 200) <= 1 && Math.abs(rect.height - 150) <= 1;
-    });
-    if (images.length < 3) {
-      return { details: 'Нужны три изображения размером 200×150px.', pass: false };
+    const { number, query, visible } = globalThis.__courseGrader;
+    const candidates = query('div').filter(
+      (item) =>
+        item.querySelector('img') && item.querySelector('h1, h2, h3') && item.querySelector('p'),
+    );
+    // Find the individual cards without relying on class names or image wrappers.
+    const cards = candidates.filter(
+      (card) => !candidates.some((other) => other !== card && card.contains(other)),
+    );
+    if (cards.length !== 3) {
+      return {
+        details: 'Нужны три отдельные div-карточки с изображением, заголовком и описанием.',
+        pass: false,
+      };
     }
-    const rects = images.slice(0, 3).map((item) => item.getBoundingClientRect());
-    const sameRow = new Set(rects.map((rect) => Math.round(rect.top))).size === 1;
+
+    for (const [index, card] of cards.entries()) {
+      const image = [...card.querySelectorAll('img')].find(visible);
+      if (!image) {
+        return { details: `В карточке №${index + 1} нужно видимое изображение.`, pass: false };
+      }
+      // CSS width/height honor the author's box-sizing; a DOMRect also adds
+      // padding and borders for content-box, which the assignment does not forbid.
+      const style = getComputedStyle(image);
+      if (Math.abs(number(style.width) - 200) > 1 || Math.abs(number(style.height) - 150) > 1) {
+        return {
+          details: `Изображение в карточке №${index + 1} должно иметь размер 200×150px. Получено: ${style.width} × ${style.height}.`,
+          pass: false,
+        };
+      }
+    }
+
+    const rects = cards
+      .map((card) => card.getBoundingClientRect())
+      .sort((left, right) => left.left - right.left);
+    const sameRow =
+      Math.max(...rects.map((rect) => rect.top)) < Math.min(...rects.map((rect) => rect.bottom));
+    if (!sameRow) {
+      return { details: 'Карточки должны располагаться в одну строку.', pass: false };
+    }
     const gaps = [rects[1].left - rects[0].right, rects[2].left - rects[1].right];
-    const pass = sameRow && gaps.every((gap) => gap >= 19);
-    return { details: pass ? 'ok' : 'Карточки должны быть в строке с отступом 20px.', pass };
+    const pass = gaps.every((gap) => Math.abs(gap - 20) <= 1);
+    return {
+      details: pass
+        ? 'ok'
+        : `Отступы между карточками должны быть 20px. Получено: ${gaps.map((gap) => `${gap.toFixed(2)}px`).join(', ')}.`,
+      pass,
+    };
   });
 }
 
