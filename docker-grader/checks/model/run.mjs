@@ -78,7 +78,7 @@ function readMember(instance, memberPath) {
   return memberPath.split('.').reduce((value, key) => value?.[key], instance);
 }
 
-function containsValue(value, expected, visited = new Set()) {
+export function containsValue(value, expected, visited = new Set()) {
   if (Object.is(value, expected)) {
     return true;
   }
@@ -95,7 +95,17 @@ function containsValue(value, expected, visited = new Set()) {
   if (value instanceof Set) {
     return [...value].some((item) => containsValue(item, expected, visited));
   }
-  return Object.values(value).some((item) => containsValue(item, expected, visited));
+  if (Array.isArray(value)) {
+    return value.some((item) => containsValue(item, expected, visited));
+  }
+  // Object grouping keys are strings, including keys derived from numeric counts.
+  // Array indexes must not count as matches for values missing from the result.
+  return Object.entries(value).some(
+    ([key, item]) =>
+      ((typeof expected === 'string' || typeof expected === 'number') &&
+        key === String(expected)) ||
+      containsValue(item, expected, visited),
+  );
 }
 
 function isEmpty(value) {
