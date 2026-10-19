@@ -6,6 +6,7 @@ import { validateRequiredFiles, validateVariant } from '../docker-grader/submiss
 import { loadTaskBank, resolveTask } from '../docker-grader/tasks/store.mjs';
 import { annotateError, writeGithubOutput, writeStepSummary } from '../reports/output.mjs';
 import { parseArgs, requiredArg } from '../shared/args.mjs';
+import { collectCourseworkFiles, courseworkChangedFiles } from '../shared/coursework-files.mjs';
 import { assertStudentConfig } from '../scripts/student-config.mjs';
 import { validateChangedPaths, validateTreeEntries } from './changed-files.mjs';
 import { listTreeEntries, readEvent } from './git.mjs';
@@ -20,12 +21,22 @@ export async function runGate(options) {
     throw new Error('The event payload does not contain pull_request.');
   }
 
-  await assertStudentConfig(options.baseRoot);
-
-  const { lab, slug, variant: titleVariant } = parsePrTitle(pullRequest.title);
+  const title = parsePrTitle(pullRequest.title);
   const files =
     options.files ??
     (await listPullRequestFiles(pullRequest.url, options.token ?? process.env.GITHUB_TOKEN));
+  if (title.kind === 'coursework') {
+    const selected = courseworkChangedFiles(files);
+    await collectCourseworkFiles(options.headRoot, selected);
+    return {
+      kind: 'coursework',
+      files: selected,
+      submissionDirectory: path.resolve(options.headRoot),
+      submissionRelative: '.',
+    };
+  }
+  await assertStudentConfig(options.baseRoot);
+  const { lab, slug, variant: titleVariant } = title;
   const prefix = validateChangedPaths(files, slug, lab);
   const submissionDirectory = path.resolve(options.headRoot, slug, `lab${lab}`);
   const relative = path.relative(path.resolve(options.headRoot), submissionDirectory);
@@ -95,10 +106,19 @@ async function main() {
 
   const result = await runGate({ baseRoot, event, files, headRoot });
   await writeGithubOutput({
-    lab: result.lab,
+    kind: result.kind ?? 'lab',
+    files: JSON.stringify(result.files ?? []),
+    lab: result.lab ?? '',
     submission_dir: result.submissionRelative,
-    variant: result.variant,
+    variant: result.variant ?? '',
   });
+  if (result.kind === 'coursework') {
+    await writeStepSummary(
+      `## Курсовая работа ✅\n\nСтруктура проекта свободная. Проверяются только стиль и код изменённых веб-файлов: ${result.files.length}.`,
+    );
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
   const registration = result.binding.firstSubmission
     ? '\n\nЭто первая принятая работа slug: на защите нужно сверить вариант с таблицей.'
     : '';

@@ -119,7 +119,17 @@ async function readInfrastructureFailure(directory) {
 export function renderReport(result) {
   const checks = result.checks ?? [];
   const counts = countStatuses(checks);
-  const lines = [`## Проверка лабораторной ${result.passed ? '✅' : '❌'}`, ''];
+  const coursework = result.kind === 'coursework';
+  const lines = [
+    `## Проверка ${coursework ? 'курсовой работы' : 'лабораторной'} ${result.passed ? '✅' : '❌'}`,
+    '',
+  ];
+
+  if (coursework) {
+    lines.push('- Только статические проверки веб-кода и стиля.');
+    lines.push(`- Файлов: **${result.files?.length ?? 0}**`);
+    lines.push(`- Общее время: **${formatDuration(result.durationMs)}**`, '');
+  }
 
   if (result.task) {
     lines.push(`- Лабораторная: **lab${result.lab}**`);

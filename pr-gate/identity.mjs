@@ -17,7 +17,7 @@ export async function findStudentBinding({ baseRoot, repository, slug, token, pu
       } catch {
         continue;
       }
-      if (title.slug !== slug) {
+      if (title.kind === 'coursework' || title.slug !== slug) {
         continue;
       }
       if (!pullRequest.user?.login) {

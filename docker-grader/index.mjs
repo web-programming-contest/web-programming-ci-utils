@@ -1,10 +1,11 @@
 #!/usr/bin/env node
-import { lstat, mkdir } from 'node:fs/promises';
+import { lstat, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { annotateError, writeJsonResult } from '../reports/output.mjs';
 import { parseArgs, requiredArg } from '../shared/args.mjs';
 import { runQualityChecks } from './checks/quality/index.mjs';
+import { gradeCoursework } from './coursework.mjs';
 import { CheckSuite } from './runtime/check-suite.mjs';
 import { prepareSite } from './runtime/prepare-site.mjs';
 import { collectSourceFiles } from './runtime/submission-files.mjs';
@@ -118,22 +119,28 @@ async function exists(filename) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const submissionDirectory = path.resolve(requiredArg(args, 'submission'));
-  const lab = Number(requiredArg(args, 'lab'));
-  const variant = Number(requiredArg(args, 'variant'));
-  if (!Number.isInteger(lab) || lab < 1 || lab > 5) {
-    throw new Error('--lab must be an integer from 1 to 5.');
-  }
   const resultsDirectory = path.resolve(args.results || 'grader-results');
-  const result = await gradeSubmission({
-    submissionDirectory,
-    lab,
-    resultsDirectory,
-    variant,
-  });
+  const kind = args.kind ?? 'lab';
+  let result;
+  if (kind === 'coursework') {
+    const filenames = args.files
+      ? JSON.parse(await readFile(path.resolve(requiredArg(args, 'files')), 'utf8'))
+      : undefined;
+    result = await gradeCoursework({ submissionDirectory, resultsDirectory, filenames });
+  } else if (kind === 'lab') {
+    const lab = Number(requiredArg(args, 'lab'));
+    const variant = Number(requiredArg(args, 'variant'));
+    if (!Number.isInteger(lab) || lab < 1 || lab > 5) {
+      throw new Error('--lab must be an integer from 1 to 5.');
+    }
+    result = await gradeSubmission({ submissionDirectory, lab, resultsDirectory, variant });
+  } else {
+    throw new Error('--kind must be lab or coursework.');
+  }
   if (result.passed) {
-    console.log(
-      `\nAll ${result.checks.length} checks passed or were skipped for lab${lab}, variant ${result.variant}.`,
-    );
+    const label =
+      kind === 'coursework' ? 'coursework' : `lab${result.lab}, variant ${result.variant}`;
+    console.log(`\nAll ${result.checks.length} checks passed or were skipped for ${label}.`);
     return;
   }
 
@@ -152,6 +159,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       typeof args.results === 'string' ? args.results : 'grader-results',
     );
     await writeJsonResult(resultsDirectory, 'failure.json', {
+      kind: args.kind ?? 'lab',
       checks: error.checks ?? [],
       error: error.message,
       stack: error.stack,

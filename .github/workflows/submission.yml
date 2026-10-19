@@ -29,6 +29,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
+      kind: ${{ steps.gate.outputs.kind }}
+      files: ${{ steps.gate.outputs.files }}
       lab: ${{ steps.gate.outputs.lab }}
       submission_dir: ${{ steps.gate.outputs.submission_dir }}
       variant: ${{ steps.gate.outputs.variant }}
@@ -118,8 +120,21 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/grader-results/docker-build.log"
 
       - name: Run untrusted student code in a restricted container
+        env:
+          SUBMISSION_KIND: ${{ needs.gate.outputs.kind }}
+          SUBMISSION_FILES: ${{ needs.gate.outputs.files }}
+          SUBMISSION_DIR: ${{ needs.gate.outputs.submission_dir }}
+          SUBMISSION_LAB: ${{ needs.gate.outputs.lab }}
+          SUBMISSION_VARIANT: ${{ needs.gate.outputs.variant }}
         run: |
           set -o pipefail
+          printf '%s\n' "$SUBMISSION_FILES" > "$RUNNER_TEMP/grader-results/coursework-files.json"
+          grader_args=(--kind "$SUBMISSION_KIND")
+          if [[ "$SUBMISSION_KIND" == coursework ]]; then
+            grader_args+=(--files /workspace/grader-results/coursework-files.json)
+          else
+            grader_args+=(--lab "$SUBMISSION_LAB" --variant "$SUBMISSION_VARIANT")
+          fi
           docker run --rm \
             --network none \
             --read-only \
@@ -136,9 +151,8 @@ jobs:
             --volume "$RUNNER_TEMP/grader-results:/workspace/grader-results:rw" \
             course-grader:local \
             node docker-grader/index.mjs \
-            --submission "/workspace/submission/${{ needs.gate.outputs.submission_dir }}" \
-            --lab "${{ needs.gate.outputs.lab }}" \
-            --variant "${{ needs.gate.outputs.variant }}" \
+            --submission "/workspace/submission/$SUBMISSION_DIR" \
+            "${grader_args[@]}" \
             --results /workspace/grader-results \
             2>&1 | tee "$RUNNER_TEMP/grader-results/docker-run.log"
 

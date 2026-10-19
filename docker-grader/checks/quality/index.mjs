@@ -9,5 +9,7 @@ export function runQualityChecks(context) {
   runEslint(context);
   runStylelint(context);
   runHtmlValidate(context);
-  runTypescript(context);
+  if (context.kind !== 'coursework') {
+    runTypescript(context);
+  }
 }
