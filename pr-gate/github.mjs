@@ -40,3 +40,17 @@ export async function listPullRequestFiles(apiUrl, token = process.env.GITHUB_TO
 export async function pullRequestsForCommit(repository, sha, token = process.env.GITHUB_TOKEN) {
   return githubRequest(`https://api.github.com/repos/${repository}/commits/${sha}/pulls`, token);
 }
+
+export async function listMergedPullRequests(repository, token = process.env.GITHUB_TOKEN) {
+  const pulls = [];
+  for (let page = 1; ; page += 1) {
+    const batch = await githubRequest(
+      `https://api.github.com/repos/${repository}/pulls?state=closed&per_page=100&page=${page}`,
+      token,
+    );
+    pulls.push(...batch.filter((pull) => pull.merged_at));
+    if (batch.length < 100) {
+      return pulls;
+    }
+  }
+}

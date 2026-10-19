@@ -61,7 +61,7 @@ jobs:
           node-version: 24.19.0
           package-manager-cache: false
 
-      - name: Generate reports
+      - name: Generate laboratory and coursework reports
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: |

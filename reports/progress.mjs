@@ -8,12 +8,14 @@ import { git } from '../pr-gate/git.mjs';
 import { findStudentBinding } from '../pr-gate/identity.mjs';
 import { SLUG_REGEX } from '../pr-gate/title.mjs';
 import { parseArgs } from '../shared/args.mjs';
+import { attachCourseworks, findAcceptedCourseworks } from './coursework.mjs';
 
 export async function buildProgressReport({
   root,
   repository,
   token,
   bindingLookup = findStudentBinding,
+  courseworkLookup = findAcceptedCourseworks,
 }) {
   const bank = await loadTaskBank();
   const entries = await readdir(root, { withFileTypes: true });
@@ -25,16 +27,6 @@ export async function buildProgressReport({
   const students = [];
   for (const slug of slugs) {
     const errors = [];
-    let binding = null;
-    try {
-      binding = await bindingLookup({ baseRoot: root, repository, slug, token });
-      if (binding) {
-        validateVariant(binding.variant, bank.variants.variantCount);
-      }
-    } catch (error) {
-      errors.push(`binding: ${error.message}`);
-    }
-
     const labs = {};
     for (let lab = 1; lab <= 5; lab += 1) {
       const directory = path.join(root, slug, `lab${lab}`);
@@ -43,7 +35,7 @@ export async function buildProgressReport({
         labs[`lab${lab}`] = {
           accepted: true,
           acceptedAt: firstCommitDate(root, `${slug}/lab${lab}`),
-          variant: binding?.variant ?? null,
+          variant: null,
         };
       } catch (error) {
         if (error.code !== 'ENOENT' && !error.message.startsWith('Required file is missing')) {
@@ -54,6 +46,23 @@ export async function buildProgressReport({
     }
 
     const acceptedCount = Object.values(labs).filter((lab) => lab.accepted).length;
+    let binding = null;
+    const hasLaboratory = (await readdir(path.join(root, slug))).some((name) =>
+      /^lab[1-5]$/.test(name),
+    );
+    if (hasLaboratory) {
+      try {
+        binding = await bindingLookup({ baseRoot: root, repository, slug, token });
+        if (binding) {
+          validateVariant(binding.variant, bank.variants.variantCount);
+          for (const lab of Object.values(labs).filter((value) => value.accepted)) {
+            lab.variant = binding.variant;
+          }
+        }
+      } catch (error) {
+        errors.push(`binding: ${error.message}`);
+      }
+    }
     if (acceptedCount > 0 && !binding) {
       errors.push('cannot determine GitHub author and variant from a merged PR');
     }
@@ -67,11 +76,15 @@ export async function buildProgressReport({
     });
   }
 
+  attachCourseworks(students, await courseworkLookup({ root, repository, token }));
+
   return {
     generatedAt: new Date().toISOString(),
     students,
     totals: {
       acceptedLabs: students.reduce((sum, student) => sum + student.acceptedCount, 0),
+      acceptedCourseworks: students.filter((student) => student.coursework.accepted).length,
+      acceptedWorks: students.reduce((sum, student) => sum + student.acceptedTotal, 0),
       students: students.length,
     },
   };
@@ -79,28 +92,31 @@ export async function buildProgressReport({
 
 export function formatMarkdown(report) {
   const lines = [
-    '# Прогресс сдачи лабораторных',
+    '# Прогресс сдачи лабораторных и курсовых',
     '',
     `Сформировано: ${report.generatedAt}`,
     '',
-    '| Студент | GitHub | Вариант | Lab 1 | Lab 2 | Lab 3 | Lab 4 | Lab 5 | Итог |',
-    '| --- | --- | ---: | :---: | :---: | :---: | :---: | :---: | ---: |',
+    '| Студент | GitHub | Вариант | Lab 1 | Lab 2 | Lab 3 | Lab 4 | Lab 5 | Курсовая | Итог |',
+    '| --- | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | ---: |',
   ];
   for (const student of report.students) {
     const labCells = [1, 2, 3, 4, 5].map((lab) => {
       const value = student.labs[`lab${lab}`];
       return value.accepted ? `✅ ${value.acceptedAt?.slice(0, 10) ?? ''}`.trim() : '—';
     });
+    const coursework = student.coursework.accepted
+      ? `✅ ${student.coursework.acceptedAt.slice(0, 10)} [#${student.coursework.pullNumber}](${student.coursework.url})`
+      : '—';
     lines.push(
-      `| ${escapeTableCell(student.slug)} | ${escapeTableCell(student.github ?? '—')} | ${student.variant ?? '—'} | ${labCells.join(' | ')} | ${student.acceptedCount}/5 |`,
+      `| ${escapeTableCell(student.slug ?? `@${student.github}`)} | ${escapeTableCell(student.github ?? '—')} | ${student.variant ?? '—'} | ${labCells.join(' | ')} | ${coursework} | ${student.acceptedTotal}/6 |`,
     );
     if (student.errors.length > 0) {
-      lines.push(`| ⚠️ | ${student.errors.map(escapeTableCell).join('<br>')} | | | | | | | |`);
+      lines.push(`| ⚠️ | ${student.errors.map(escapeTableCell).join('<br>')} | | | | | | | | |`);
     }
   }
   lines.push(
     '',
-    `Всего: ${formatStudentCount(report.totals.students)}, ${formatAcceptedLabCount(report.totals.acceptedLabs)}.`,
+    `Всего: ${formatStudentCount(report.totals.students)}, ${formatAcceptedLabCount(report.totals.acceptedWorks)} (лабораторных: ${report.totals.acceptedLabs}, курсовых: ${report.totals.acceptedCourseworks}).`,
     '',
   );
   return lines.join('\n');
@@ -147,16 +163,24 @@ export function formatCsv(report) {
       'lab5',
       'accepted_count',
       'errors',
+      'coursework_accepted',
+      'coursework_accepted_at',
+      'coursework_pr',
+      'accepted_total',
     ],
   ];
   for (const student of report.students) {
     rows.push([
-      student.slug,
+      student.slug ?? '',
       student.github ?? '',
       student.variant ?? '',
       ...[1, 2, 3, 4, 5].map((lab) => student.labs[`lab${lab}`].acceptedAt ?? ''),
       student.acceptedCount,
       student.errors.join('; '),
+      student.coursework.accepted,
+      student.coursework.acceptedAt ?? '',
+      student.coursework.url ?? '',
+      student.acceptedTotal,
     ]);
   }
   return `${rows.map((row) => row.map(csvCell).join(',')).join('\n')}\n`;
